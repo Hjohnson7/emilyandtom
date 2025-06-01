@@ -1,0 +1,34 @@
+# backend/authentication.py
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+
+class CookieJWTAuthentication(JWTAuthentication):
+
+    def authenticate(self, request):
+
+        if request.path in ['/auth/login', '/auth/refresh', 'auth/logout', 'auth/users', 'auth/users/activation']:
+            return None
+        # Try to get the token from the Authorization header first
+        header = self.get_header(request)
+        if header is None:
+            # Fallback to HttpOnly cookie
+            raw_token = request.COOKIES.get('access_token')
+        else:
+            raw_token = self.get_raw_token(header)
+
+        if raw_token is None:
+            return None
+        try:
+            validated_token = self.get_validated_token(raw_token)
+        except (AuthenticationFailed, InvalidToken, TokenError):
+            return None
+        return self.get_user(validated_token), validated_token
+
+
+class AllowExpiredJWTAuthentication(JWTAuthentication):
+    def authenticate(self, request):
+        try:
+            return super().authenticate(request)
+        except (AuthenticationFailed, InvalidToken, TokenError):
+            return None  # Treat as anonymous if token is bad
