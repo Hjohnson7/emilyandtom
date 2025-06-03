@@ -14,12 +14,16 @@ export const lightTheme = {
       backgroundMain: '#698A65',     // Green
       backgroundLighter: '#EAE4CC',     // Yellowy
       backgroundDarker: '#3E513C',  // Dark Green
-      text: '#FFFFFF',           // Dark gray
+      text: '#FFFFFF',           // white
       muted: '#AAAAAA',          // Light gray
+      black: 'black',
+      faqs: '#F3DBB9',
     },
     typography: {
       fontFamily: "'Playfair Display', serif",
       bodyFont: "'Open Sans', sans-serif",
+      serif: "'Playfair Display', serif",
+      script: "'Great Vibes', cursive", // Or any other elegant script you prefer
       fontSizes: {
         small: 'clamp(0.85rem, 1vw, 0.95rem)',
         medium: 'clamp(1rem, 1.2vw, 1.1rem)',

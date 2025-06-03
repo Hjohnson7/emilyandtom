@@ -16,6 +16,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import styled from 'styled-components';
 import { useTheme } from 'styled-components';
 import useBreakpoint from '../../hooks/useBreakPoints';
+import { useNavigate } from 'react-router-dom';
 
 const Logo = styled(Typography)`
   font-family: ${({ theme }) => theme.typography.fontFamily};
@@ -24,6 +25,13 @@ const Logo = styled(Typography)`
   color: ${({ theme }) => theme.colors.text};
   flex-grow: 1;
 `;
+
+const LogoLink = styled(Typography)`
+width: ${({ theme }) => theme.spacing.xxxl};
+&:hover {
+    cursor: pointer
+  }
+`
 
 const NavButton = styled(Button)`
   color: ${({ theme }) => theme.colors.text};
@@ -37,11 +45,21 @@ const NavBar = () => {
   const breakpoint = useBreakpoint();
   const isMobile = breakpoint === 'xs'
 
+  const navigate = useNavigate()
+
   const handleDrawerToggle = () => {
     setOpenDrawer(!openDrawer);
   };
 
-  const navLinks = ['FAQs', 'Travel', 'Accommodation', 'About'];
+  const goToAdmin = () => {
+    window.location.href = '/api/admin/';
+}
+
+const goTo = (ref) => {
+    navigate(ref)
+}
+
+  const navLinks = [{name: 'FAQs', link: 'faqs'}, {name: 'Travel', link: 'travel'}, {name: 'Accommodation', link: 'accomodation'}, {name: 'About', link: 'about'}];
 
   return (
     <>
@@ -53,17 +71,17 @@ const NavBar = () => {
             </IconButton>
           )}
 
-          <Logo theme={theme}>Emily & Tom</Logo>
+          <Logo theme={theme}> <LogoLink onClick={() => goTo('/')} >Emily & Tom</LogoLink></Logo>
 
           {!isMobile && (
             <Box sx={{ display: 'flex', flexGrow: 1 }}>
               {navLinks.map((link) => (
-                <NavButton key={link} theme={theme}>{link}</NavButton>
+                <NavButton key={link.name} theme={theme} onClick={() => goTo(link.link)}>{link.name}</NavButton>
               ))}
             </Box>
           )}
 
-          <IconButton color="inherit" edge="end">
+          <IconButton color="inherit" edge="end" onClick={goToAdmin}>
             <AccountCircleIcon />
           </IconButton>
         </Toolbar>
@@ -72,8 +90,8 @@ const NavBar = () => {
       <Drawer anchor="left" open={openDrawer} onClose={handleDrawerToggle}>
         <List sx={{ width: 250 }}>
           {navLinks.map((text) => (
-            <ListItem button key={text} onClick={handleDrawerToggle}>
-              <ListItemText primary={text} />
+            <ListItem button key={text.name} onClick={handleDrawerToggle}>
+              <ListItemText primary={text.name} />
             </ListItem>
           ))}
         </List>

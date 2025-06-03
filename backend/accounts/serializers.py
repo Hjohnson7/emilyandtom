@@ -14,3 +14,9 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'email', 'fname', 'lname', 'is_staff', 'is_admin')  # Include is_staff
+
+
+class GuestUserSerializer(serializers.Serializer):
+    fname = serializers.CharField()
+    lname = serializers.CharField()
+    email = serializers.EmailField()

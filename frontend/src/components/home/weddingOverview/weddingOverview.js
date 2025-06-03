@@ -3,7 +3,6 @@ import styled from "styled-components"
 import AnimatedImage from "./animatedImage"
 import { motion } from 'framer-motion';
 import useInView from "../../../hooks/inViewHook";
-import AnimatedItem from "../../utils/animatedItem";
 
 const Container = styled.section`
     background-color: ${({theme}) => theme.colors.backgroundMain};

@@ -6,6 +6,8 @@ import WeddingBanner from '../../components/weddingBanner/weddingBanner';
 import WeddingDetails from '../../components/weddingBanner/weddingDetails';
 import ImageContainer from '../../components/home/imageContainer/imageContainer';
 import WeddingOverview from '../../components/home/weddingOverview/weddingOverview';
+import ScheduleOfEvents from '../../components/home/eventSchedule/eventSchedule';
+import FaqSection from '../../components/home/faqs/faqs';
 
 const Container = styled.div`
   max-width: 960px;
@@ -23,6 +25,8 @@ const HomePage = () => {
         </Container>
         <ImageContainer />
         <WeddingOverview />
+        <ScheduleOfEvents />
+        <FaqSection />
     </ThemeProvider>
   );
 };

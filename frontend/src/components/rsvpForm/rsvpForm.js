@@ -52,7 +52,7 @@ const Checkbox = styled.input.attrs({ type: 'checkbox' })`
 `;
 
 const Button = styled.button`
-  background-color: ${({ theme }) => theme.colors.primary};
+  background-color: ${({ theme }) => theme.colors.backgroundLighter};
   color: #fff;
   padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.lg};
   border: none;
@@ -61,7 +61,7 @@ const Button = styled.button`
   font-weight: bold;
   transition: ${({ theme }) => theme.transitions.default};
   &:hover {
-    background-color: ${({ theme }) => theme.colors.accent};
+    background-color: ${({ theme }) => theme.colors.backgroundDarker};
   }
 `;
 

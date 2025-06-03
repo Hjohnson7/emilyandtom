@@ -9,6 +9,9 @@ import { SnackbarProvider } from 'notistack';
 import HomePage from './screens/homepage/homepage';
 import RsvpPage from './screens/rsvpPage';
 import NavBar from './components/navigationBar/navigationBar';
+import FaqPage from './screens/FAQPage/FAQPage';
+import WeddingTravelInfo from './screens/travel/travel';
+import AccomodationPage from './screens/accomodation/accomodation';
 
 function App() {
 
@@ -31,6 +34,9 @@ function App() {
             <Routes>
             <Route exact path="/" element={<HomePage/>}/> 
             <Route exact path="/rsvp/:id" element={<RsvpPage />} />
+            <Route exact path="/faqs" element={<FaqPage/>} />
+            <Route exact path="/travel" element={<WeddingTravelInfo />} />
+            <Route exact path="/accomodation" element={<AccomodationPage />} />
             {/* <Route exact path="/login" element={<LoginPage/>} />
             <Route exact path="/signup" element={<SignUp/>} />
             <Route exact path="/activate/:uid/:token" element={<Activate />} />

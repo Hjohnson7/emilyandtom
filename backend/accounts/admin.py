@@ -50,7 +50,7 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = UserAccount
-        fields = ["fname", "lname", "email", "password", "is_active",  "is_active", "is_admin", "is_staff", "is_superuser", 'date_joined', 'last_login']
+        fields = ["fname", "lname", "email", "password", "is_active",  "is_active", "is_admin", "is_staff", "is_superuser", 'date_joined', 'last_login', 'sent_invite', 'rsvped', 'quiz_response', 'temp_password']
 
 
 class UserAdmin(BaseUserAdmin):
@@ -61,7 +61,7 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ["fname", "lname","email",  "is_active", "is_admin", "is_staff", "is_superuser", 'date_joined', 'last_login']
+    list_display = ["fname", "lname","email",  "is_active", "is_admin", "is_staff", "is_superuser", 'date_joined', 'last_login', 'sent_invite', 'rsvped', 'quiz_response', 'temp_password']
     list_filter = ["is_admin"]
     fieldsets = [
         (None, {"fields": ["email", "password"]}),

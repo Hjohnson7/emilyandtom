@@ -35,6 +35,10 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
     last_login = models.DateTimeField(blank=True, null=True)
+    sent_invite = models.BooleanField(default=False)
+    rsvped = models.BooleanField(default=False)
+    quiz_response = models.BooleanField(default=False)
+    temp_password = models.BooleanField(default=True)
     objects = UserAccountManager()
 
     USERNAME_FIELD = 'email'
