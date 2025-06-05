@@ -16,7 +16,7 @@ const AnimatedImage = styled.img`
 `;
 
 const ImageBox = styled(Box)`
-  width: 320px;
+  min-width: 320px;
   height: 480px;
   border: 4px solid ${({ theme }) => theme.colors.backgroundMain};
   border-radius: 50% / 35%;
@@ -31,6 +31,7 @@ const Container = styled.section`
     display: flex;
     flex-direction: row;
     justify-content: center;
+    flex-wrap: wrap;
     padding: ${({ theme }) => theme.spacing.xxxl};
 `
 

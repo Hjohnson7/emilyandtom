@@ -10,6 +10,7 @@ import {
   List,
   ListItem,
   ListItemText,
+  Tooltip
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -17,6 +18,8 @@ import styled from 'styled-components';
 import { useTheme } from 'styled-components';
 import useBreakpoint from '../../hooks/useBreakPoints';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/authContext';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const Logo = styled(Typography)`
   font-family: ${({ theme }) => theme.typography.fontFamily};
@@ -44,6 +47,7 @@ const NavBar = () => {
   const [openDrawer, setOpenDrawer] = React.useState(false);
   const breakpoint = useBreakpoint();
   const isMobile = breakpoint === 'xs'
+  const {user, logout} = useAuth()
 
   const navigate = useNavigate()
 
@@ -78,20 +82,25 @@ const goTo = (ref) => {
               {navLinks.map((link) => (
                 <NavButton key={link.name} theme={theme} onClick={() => goTo(link.link)}>{link.name}</NavButton>
               ))}
+              {user && 
+                <NavButton key={'rsvp'} theme={theme} onClick={() => goTo('rsvp')}>RSVP</NavButton>
+              }
             </Box>
           )}
-
-          <IconButton color="inherit" edge="end" onClick={goToAdmin}>
+        
+        {user ? (<Tooltip title="logout"><IconButton color="inherit" onClick={logout}>
+                                <LogoutIcon />
+                            </IconButton></Tooltip>): <IconButton color="inherit" edge="end" onClick={() => goTo('login')}>
             <AccountCircleIcon />
-          </IconButton>
+          </IconButton>}
         </Toolbar>
       </AppBar>
 
       <Drawer anchor="left" open={openDrawer} onClose={handleDrawerToggle}>
-        <List sx={{ width: 250 }}>
+        <List sx={{ width: 250, background: theme.colors.backgroundDarker, boxShadow: theme.shadows.medium, height: '100%' }} >
           {navLinks.map((text) => (
             <ListItem button key={text.name} onClick={handleDrawerToggle}>
-              <ListItemText primary={text.name} />
+              <ListItemText primary={text.name} onClick={() => goTo(text.link)}/>
             </ListItem>
           ))}
         </List>

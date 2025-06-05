@@ -3,12 +3,14 @@ import React, { createContext, useState, useEffect } from 'react';
 import {APPURL} from "../constants/appUrl"
 import api from '../constants/api';
 import useAutoRefreshToken from '../hooks/useAutoRefreshHook';
+import { useSnackbar } from 'notistack';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true); // To prevent flashing
+    const { enqueueSnackbar } = useSnackbar();
 
     useAutoRefreshToken()  // Auto refresh login every 4 mins if login.
 
@@ -23,7 +25,11 @@ export const AuthProvider = ({ children }) => {
                 lname: res.data.lname,
                 email: res.data.email,
                 is_staff: res.data.is_staff,
-                is_admin: res.data.is_admin
+                is_admin: res.data.is_admin,
+                sent_invite: res.data.sent_invite,
+                rsvped: res.data.rsvped,
+                quiz_response: res.data.quiz_response,
+                temp_password: res.data.temp_password,
               })
           } catch (err) {
             setUser(null); // Not logged in
@@ -52,9 +58,13 @@ export const AuthProvider = ({ children }) => {
                 lname: res.data.lname,
                 email: res.data.email,
                 is_staff: res.data.is_staff,
-                is_admin: res.data.is_admin
+                is_admin: res.data.is_admin,
+                sent_invite: res.data.sent_invite,
+                rsvped: res.data.rsvped,
+                quiz_response: res.data.quiz_response,
+                temp_password: res.data.temp_password,
               })
-            return {user: res.data.fname}
+            return {user: res.data}
             } catch (error) {
                 console.error('Login failed', error);
                 setUser(null)

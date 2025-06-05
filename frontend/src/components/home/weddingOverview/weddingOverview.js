@@ -25,6 +25,7 @@ const Wrapper = styled(Box)`
     display: flex;
     flex-direction: row;
     justify-content: center;
+    flex-wrap: wrap;
 `
 
 const GroupedDetail = styled(Box)`
@@ -33,6 +34,7 @@ const GroupedDetail = styled(Box)`
     margin: ${({ theme }) => theme.spacing.lg};
     text-align: center;
     width: 25%;
+    min-width: 320px;
 `
 
 const WeddingOverview = () => {

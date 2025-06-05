@@ -12,6 +12,9 @@ import NavBar from './components/navigationBar/navigationBar';
 import FaqPage from './screens/FAQPage/FAQPage';
 import WeddingTravelInfo from './screens/travel/travel';
 import AccomodationPage from './screens/accomodation/accomodation';
+import LoginPage from './screens/authentication/loginPage';
+import ForgotPasswordPage from './screens/authentication/forgotPassword';
+import ResetPasswordPage from './screens/authentication/resetPassword';
 
 function App() {
 
@@ -28,30 +31,18 @@ function App() {
       <GlobalStyle />
       <Router>
         <div id="main">
-        <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} autoHideDuration={2000}>
+        <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} autoHideDuration={4000}>
         <NavBar />
           <div className="inner" style={{ flex: 1 }}>
             <Routes>
             <Route exact path="/" element={<HomePage/>}/> 
-            <Route exact path="/rsvp/:id" element={<RsvpPage />} />
+            <Route exact path="/rsvp" element={<RsvpPage />} />
             <Route exact path="/faqs" element={<FaqPage/>} />
             <Route exact path="/travel" element={<WeddingTravelInfo />} />
             <Route exact path="/accomodation" element={<AccomodationPage />} />
-            {/* <Route exact path="/login" element={<LoginPage/>} />
-            <Route exact path="/signup" element={<SignUp/>} />
-            <Route exact path="/activate/:uid/:token" element={<Activate />} />
-            <Route exact path="/password/reset/confirm/:uid/:token" element={<ResetPasswordPage />} />
-            <Route exact path="/profile" element={<UserProfilePage />} />
-            <Route exact path="/user/admin/calendar" element={<CalendarPage/>} />
-            <Route exact path="user/admin/holidays" element={<StaffHolidayPage />} />
-            <Route exact path="user/admin/working-hours" element={<StaffWorkingHoursPage />} />
-            <Route exact path="/treatments" element={<TreatmentsPage />} />
-            <Route exact path="/make-booking/:id" element={<BookingsPage />} />
-            <Route exact path="/testimonials" element={<TestimonialPage/>} />
-            <Route exact path="/book-now" element={<BookingFlowPage />} />
-            <Route exact path="/user/admin/dashboard" element={<DashboardAnalyticsPage />} />
+            <Route exact path="/login" element={<LoginPage/>} />
             <Route exact path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route exact path="/contact" element={<ContactPage />} />   */}
+            <Route exact path="/password/reset/confirm/:uid/:token" element={<ResetPasswordPage />} />
           </Routes>
         </div>
         {/* <Footer /> */}

@@ -16,6 +16,7 @@ const Container = styled.section`
   @media (max-width: 768px) {
     flex-direction: column;
     text-align: center;
+    padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.sm};
   }
 `;
 
@@ -29,6 +30,10 @@ const Right = styled(motion.ul)`
   padding: 0;
   padding-top: ${({ theme }) => theme.spacing.xxxl};
   margin-top: ${({ theme }) => theme.spacing.xxxl};
+  @media (max-width: 768px) {
+  margin-top: ${({ theme }) => theme.spacing.sm};
+  padding-top: ${({ theme }) => theme.spacing.sm};
+}
 `;
 
 const Title = styled(Typography)`
@@ -70,71 +75,76 @@ const EventItem = styled(motion.li)`
   > span {
     margin-left: 2rem;
   }
+    @media (max-width: 768px) {
+    align-items: left;
+}
 `;
 
 const Wrapper = styled(Box)`
     width: 70%;
     display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
+    justify-content: center;
+    flex-wrap: wrap;
     @media (max-width: 768px) {
-    width: 100%;
-    flex-direction: column;
-    text-align: center;
-  }
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
+        
+    }
 `
 
 // ---------- Animation Variants ----------
 
 const listVariants = {
-  visible: {
-    transition: {
-      staggerChildren: 0.15,
+    visible: {
+        transition: {
+            staggerChildren: 0.15,
+        },
     },
-  },
-  hidden: {},
+    hidden: {},
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
 };
 
 // ---------- Component ----------
 
 const ScheduleOfEvents = () => {
-  const [ref, inView] = useInView({ threshold: 0.2 });
+    const [ref, inView] = useInView({ threshold: 0.2 });
 
-  const schedule = [
-    { time: "4:00 PM", title: "COCKTAILS" },
-    { time: "5:00 PM", title: "WEDDING CEREMONY" },
-    { time: "6:00 PM", title: "RECEPTION" },
-    { time: "8:00 PM", title: "AFTERPARTY" },
-  ];
+    const schedule = [
+        { time: "4:00 PM", title: "COCKTAILS" },
+        { time: "5:00 PM", title: "WEDDING CEREMONY" },
+        { time: "6:00 PM", title: "RECEPTION" },
+        { time: "8:00 PM", title: "AFTERPARTY" },
+    ];
 
-  return (
-    <Container ref={ref}>
-        <Wrapper>
-      <Left>
-        <Title variant="h2">SCHEDULE</Title>
-        <Subtitle variant="h3">of EVENTS</Subtitle>
-        <DateText variant="body1">APRIL 30, 2030</DateText>
-      </Left>
-      <Right
-        initial="hidden"
-        animate={inView ? "visible" : "hidden"}
-        variants={listVariants}
-      >
-        {schedule.map((item, idx) => (
-          <EventItem key={idx} variants={itemVariants}>
-            {item.time}
-            <span>{item.title}</span>
-          </EventItem>
-        ))}
-      </Right>
-      </Wrapper>
-    </Container>
-  );
+    return (
+        <Container ref={ref}>
+            <Wrapper>
+                <Left>
+                    <Title variant="h2">SCHEDULE</Title>
+                    <Subtitle variant="h3">of EVENTS</Subtitle>
+                    <DateText variant="body1">APRIL 30, 2030</DateText>
+                </Left>
+                <Right
+                    initial="hidden"
+                    animate={inView ? "visible" : "hidden"}
+                    variants={listVariants}
+                >
+                    {schedule.map((item, idx) => (
+                        <EventItem key={idx} variants={itemVariants}>
+                            {item.time}
+                            <span>{item.title}</span>
+                        </EventItem>
+                    ))}
+                </Right>
+            </Wrapper>
+        </Container>
+    );
 };
 
 export default ScheduleOfEvents;
