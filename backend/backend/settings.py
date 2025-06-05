@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'djoser',
     'accounts',
     'invitations',
+    'messaging',
     'corsheaders',
 ]
 

@@ -29,6 +29,8 @@ urlpatterns = [
     path('api/auth/refresh', views.RefreshTokenView.as_view()),
     path('api/auth/', include('djoser.urls')),
     path('api/auth/', include('djoser.urls.jwt')),
+    path('api/messages/', include('messaging.urls')),
+    path('api/invitations/', include('invitations.urls'))
 ]
 
 if settings.DEBUG:

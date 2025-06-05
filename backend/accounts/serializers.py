@@ -13,10 +13,16 @@ class UserCreateSerializer(UserCreateSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'fname', 'lname', 'is_staff', 'is_admin')  # Include is_staff
+        fields = ('id', 'email', 'fname', 'lname', 'is_staff', 'is_admin', 'sent_invite', 'rsvped', 'quiz_response', 'temp_password')  # Include is_staff
 
+
+class ChildInputSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=30)
+    age = serializers.IntegerField(min_value=0)
 
 class GuestUserSerializer(serializers.Serializer):
     fname = serializers.CharField()
     lname = serializers.CharField()
     email = serializers.EmailField()
+    partner = serializers.CharField(allow_blank=True, required=False)
+    children = ChildInputSerializer(many=True, required=False)

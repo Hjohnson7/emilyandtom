@@ -37,6 +37,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     last_login = models.DateTimeField(blank=True, null=True)
     sent_invite = models.BooleanField(default=False)
     rsvped = models.BooleanField(default=False)
+    coming = models.BooleanField(default=True)
     quiz_response = models.BooleanField(default=False)
     temp_password = models.BooleanField(default=True)
     objects = UserAccountManager()
