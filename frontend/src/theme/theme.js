@@ -44,6 +44,9 @@ export const lightTheme = {
       radius: '8px',
       radiuslg: '16px'
     },
+    radius: {
+      md: '4px'
+    },
     shadows: {
       subtle: '0 2px 4px rgba(0, 0, 0, 0.05)',
       medium: '0 4px 8px rgba(0, 0, 0, 0.1)',

@@ -1,136 +1,163 @@
-import React from 'react';
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Chip,
-  Grid,
-  Divider,
-} from '@mui/material';
-import { useTheme } from 'styled-components';
+import React, { useState, useEffect } from "react";
+import styled, { keyframes } from "styled-components";
+import api from "../../constants/api";
 
-// Dummy data for demonstration
-const rooms = [
+const accommodations = [
   {
-    name: 'The Loquiers',
-    capacity: 6,
-    guests: ['John Doe', 'Jane Smith', 'Abbie Turner'],
+    name:"A",
+    type: "Bell Tent",
+    available: 4,
+    total: 8,
+    image: "/static/frontend/images/accomodation.PNG",
+    occupants: ["Alice Smith", "John Doe", "Emily Grey", "Mike Lee"]
   },
   {
-    name: 'Long Orchard',
-    capacity: 4,
-    guests: ['Mike Johnson'],
+    name: "B",
+    type: "Bunk Room",
+    available: 2,
+    total: 12,
+    image: "/static/frontend/images/accomodation.PNG",
+    occupants: ["Tom Harris", "Nina Patel", "Rachel Yu", "Ben Cox", "Maya Singh", "Luke Taylor", "Anna Kim", "Leo Walker", "Sarah Khan", "Chris Lee"]
   },
   {
-    name: 'Welsh Bury',
-    capacity: 4,
-    guests: [],
-  },
-  {
-    name: 'Garden Cliff',
-    capacity: 8,
-    guests: ['Emily Rose', 'Tom Hardy', 'Liam Dean'],
-  },
-  {
-    name: 'Hope Wood',
-    capacity: 6,
-    guests: ['Zara Lane'],
-  },
-  {
-    name: 'Break Heart Hill',
-    capacity: 4,
-    guests: [],
-  },
-  {
-    name: 'May Hill',
-    capacity: 8,
-    guests: ['Rachel Green', 'Ross Geller', 'Monica Geller'],
-  },
+    name: "C",
+    type: "Campervan Pitch",
+    available: 1,
+    total: 3,
+    image: "/static/frontend/images/accomodation.PNG",
+    occupants: ["Zoe Allen", "Victor Brown"]
+  }
 ];
 
-const RoomMapWithGuests = () => {
-  const theme = useTheme();
+// Animation
+const fadeInUp = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+`;
+
+const Card = styled.div`
+  background: ${({ theme }) => theme.colors.background};
+  border-radius: ${({ theme }) => theme.borders.radiuslg};
+  overflow: hidden;
+  box-shadow: ${({ theme }) => theme.shadows.medium};
+  transform: translateY(20px);
+  opacity: 0;
+  animation: ${fadeInUp} 0.6s ease-out forwards;
+  animation-delay: ${({ delay }) => delay}s;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+`;
+
+const Image = styled.img`
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+`;
+
+const Content = styled.div`
+  padding: 1.2rem;
+`;
+
+const Title = styled.h3`
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+const Availability = styled.p`
+  margin: 0;
+  font-size: 1rem;
+  color: ${({ theme }) => theme.colors.primary};
+  font-weight: bold;
+`;
+
+const ToggleOccupants = styled.button`
+  margin-top: 0.8rem;
+  background: ${({ theme }) => theme.colors.backgroundLighter};
+  border: none;
+  color: ${({ theme }) => theme.colors.text};
+  padding: 0.5rem;
+  border-radius: ${({ theme }) => theme.borders.radius};
+  cursor: pointer;
+  font-size: 0.875rem;
+  &:hover {
+    background: ${({ theme }) => theme.colors.primaryLight};
+  }
+`;
+
+const OccupantList = styled.ul`
+  margin-top: 0.5rem;
+  padding-left: 1rem;
+  font-size: 0.875rem;
+  color: ${({ theme }) => theme.colors.mutedText};
+`;
+
+const AccommodationGrid = () => {
+  const [showOccupants, setShowOccupants] = useState({});
+  const [accommodations, setAccommodations] = useState([])
+
+
+  useEffect(()=> {
+    const loadRooms = async() => {
+        let rooms = await api.get('invitations/get-rooms/')
+        console.log(rooms)
+        setAccommodations(rooms.data)
+    }
+    loadRooms()
+  }, [])
+
+  const toggleOccupants = (index) => {
+    setShowOccupants((prev) => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
+
+  const ImageMap = {
+    'BUNK': '/static/frontend/images/accomodation.PNG'
+  }
+    
 
   return (
-    <Box
-      sx={{
-        padding: { xs: 2, md: 4 },
-        backgroundColor: theme.colors.backgroundDarker,
-      }}
-    >
-      <Typography
-        variant="h4"
-        sx={{
-          marginBottom: 4,
-          fontWeight: 'bold',
-          textAlign: 'center',
-          color: theme.colors.text,
-        }}
-      >
-        Room Assignments & Availability
-      </Typography>
-
-      <Grid container spacing={3}>
-        {rooms.map((room, idx) => {
-          const available = room.capacity - room.guests.length;
-          return (
-            <Grid item xs={12} sm={6} md={4} key={idx}>
-              <Card
-                variant="outlined"
-                sx={{
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  borderColor: theme.colors.backgroundLighter,
-                }}
-              >
-                <CardContent>
-                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                    {room.name}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ marginBottom: 1 }}
-                  >
-                    Capacity: {room.capacity} | Available: {available}
-                  </Typography>
-
-                  <Divider sx={{ my: 1 }} />
-
-                  {room.guests.length > 0 ? (
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        gap: 1,
-                      }}
-                    >
-                      {room.guests.map((guest, i) => (
-                        <Chip
-                          key={i}
-                          label={guest}
-                          color="secondary"
-                          variant="outlined"
-                          size="small"
-                        />
-                      ))}
-                    </Box>
-                  ) : (
-                    <Typography variant="body2" color="text.secondary">
-                      No guests yet.
-                    </Typography>
-                  )}
-                </CardContent>
-              </Card>
-            </Grid>
-          );
-        })}
-      </Grid>
-    </Box>
+    <Grid>
+      {accommodations.map((room, index) => (
+        <Card key={index} delay={index * 0.2}>
+          <Image src={ImageMap[room.type]} alt={room.type} />
+          <Content>
+            <Title>{room.type}</Title>
+            <Availability>
+              {room.available} / {room.total} beds available
+            </Availability>
+            <ToggleOccupants onClick={() => toggleOccupants(index)}>
+              {showOccupants[index] ? "Hide guests" : "View guests"}
+            </ToggleOccupants>
+            {showOccupants[index] && (
+              <OccupantList>
+                {room.occupants.map((name, i) => (
+                  <li key={i}>{name}</li>
+                ))}
+              </OccupantList>
+            )}
+          </Content>
+        </Card>
+      ))}
+    </Grid>
   );
 };
 
-export default RoomMapWithGuests;
+export default AccommodationGrid;

@@ -1,7 +1,7 @@
-import RoomMapWithGuests from "../../components/rooms/rooms"
+import AccommodationGrid from "../../components/rooms/rooms"
 
 const AccomodationPage = () => {
-    return (<RoomMapWithGuests />)
+    return (<AccommodationGrid />)
 }
 
 export default AccomodationPage

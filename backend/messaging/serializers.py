@@ -3,6 +3,7 @@ from .models import Message, FAQS
 
 class MessageSerializer(serializers.ModelSerializer):
     replies = serializers.SerializerMethodField(read_only=True)
+    user = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Message
@@ -16,6 +17,11 @@ class MessageSerializer(serializers.ModelSerializer):
             'replies',
         ]
         read_only_fields = ['user', 'timestamp', 'replies']
+
+    def get_user(self, obj):
+        if obj.user:
+            return obj.user.get_full_name() or obj.user.username
+        return "Anonymous"
 
     def get_replies(self, obj):
         if obj.replies.exists():
@@ -38,5 +44,7 @@ class FAQSerializer(serializers.ModelSerializer):
             'answer',
             'category',
         ]
+
+
 
     

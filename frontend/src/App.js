@@ -15,6 +15,8 @@ import AccomodationPage from './screens/accomodation/accomodation';
 import LoginPage from './screens/authentication/loginPage';
 import ForgotPasswordPage from './screens/authentication/forgotPassword';
 import ResetPasswordPage from './screens/authentication/resetPassword';
+import MessageScreen from './screens/messages/messages';
+import AdminPage from './screens/admin/adminPage';
 
 function App() {
 
@@ -43,6 +45,8 @@ function App() {
             <Route exact path="/login" element={<LoginPage/>} />
             <Route exact path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route exact path="/password/reset/confirm/:uid/:token" element={<ResetPasswordPage />} />
+            <Route exact path="/about" element={<MessageScreen />} />
+            <Route exact path="admin-page" element={<AdminPage />} />
           </Routes>
         </div>
         {/* <Footer /> */}

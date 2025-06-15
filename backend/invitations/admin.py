@@ -1,6 +1,6 @@
 # Register your models here.
 from django.contrib import admin
-from .models import RSVP, Room, Allergy, Guest
+from .models import RSVP, Room, Allergy, Guest, Partner, Child
 
 class AllergyAdmin(admin.ModelAdmin):
     list_display = ['name']
@@ -16,7 +16,7 @@ class RSVPAdmin(admin.ModelAdmin):
 
 
 class RoomAdmin(admin.ModelAdmin):
-    list_display = ['name', 'room_type', 'capacity', 'current_occupants_display', 'available_spots_display']
+    list_display = ['name', 'room_type', 'capacity']
     list_filter = ['room_type']
     search_fields = ['name']
 
@@ -36,5 +36,7 @@ admin.site.register(Guest, GuestAdmin)
 admin.site.register(Allergy, AllergyAdmin)
 admin.site.register(RSVP, RSVPAdmin)
 admin.site.register(Room, RoomAdmin)
+admin.site.register(Partner)
+admin.site.register(Child)
 
 

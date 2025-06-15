@@ -12,6 +12,12 @@ const Container = styled(motion.section)`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  @media (max-width: 700px) {
+   padding: 0;
+    padding-top: ${({ theme }) => theme.spacing.md};
+  }
+
 `;
 
 const Heading = styled(motion.h2)`

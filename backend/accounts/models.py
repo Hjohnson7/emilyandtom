@@ -46,7 +46,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ["fname", "lname"]
 
     def get_full_name(self):
-        return self.fname + self.lname
+        return self.fname + " " + self.lname
 
     def get_short_name(self):
         return self.fname

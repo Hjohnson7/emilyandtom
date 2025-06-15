@@ -24,14 +24,14 @@ class Room(models.Model):
     capacity = models.PositiveIntegerField()
     notes = models.TextField(blank=True)
 
-    def current_occupants(self):
-        return self.rsvp_set.count()
+    # def current_occupants(self):
+    #     return self.rsvp_set.count()
 
-    def available_spots(self):
-        return self.capacity - self.current_occupants()
+    # def available_spots(self):
+    #     return self.capacity - self.current_occupants()
 
-    def __str__(self):
-        return f"{self.name} ({self.room_type}) - {self.current_occupants()}/{self.capacity} booked"
+    # def __str__(self):
+    #     return f"{self.name} ({self.room_type}) - {self.current_occupants()}/{self.capacity} booked"
 
 
 class Guest(models.Model):
