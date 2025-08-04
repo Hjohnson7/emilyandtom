@@ -71,12 +71,9 @@ const LoginPage = () => {
         if (res.error) {
             alert(`ERROR SIGNING IN - ${res.error}`)
         } else {
-            console.log(res)
             if(!res.rsvped){
               enqueueSnackbar("Please RSVP to our wedding.", { variant: "info", action});
             }
-          //   enqueueSnackbar("Password Reset email sent.", { variant: "success" });
-            enqueueSnackbar("Password Reset email sent.", { variant: "success" });
         }
     };
 
@@ -116,7 +113,7 @@ const LoginPage = () => {
                 <Button
                     type="submit"
                     variant="contained"
-                    sx={{ marginTop: 2, backgroundColor: theme.colors.backgroundLighter }}
+                    sx={{ marginTop: 2, backgroundColor: theme.colors.backgroundMain }}
                     fullWidth
                 >
                     Sign In

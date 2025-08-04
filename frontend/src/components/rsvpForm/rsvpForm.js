@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, useTheme } from 'styled-components';
 import { CheckCircle, Circle } from 'lucide-react';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import TooltipInfo from '../utils/customTooltip';
 
 // Animation
 const fadeIn = keyframes`
@@ -46,6 +49,16 @@ const Input = styled.input`
   border-radius: ${({ theme }) => theme.borders.radius};
 `;
 
+const MultilineInput = styled.textarea`
+  width: 100%;
+  padding: ${({ theme }) => theme.spacing.sm};
+  border: 1px solid ${({ theme }) => theme.colors.muted};
+  border-radius: ${({ theme }) => theme.borders.radius};
+  font-family: inherit;
+  resize: vertical;
+  min-height: 100px;
+`;
+
 const Select = styled.select`
   width: 100%;
   padding: ${({ theme }) => theme.spacing.sm};
@@ -86,24 +99,28 @@ const ToggleWrapper = styled.div`
   }
 `;
 
-const RSVPForm = ({ guest, index, formData, handleChange, rooms }) => {
+const RSVPForm = ({ guest, index, formData, handleChange, rooms, allergies, tentSelected }) => {
     // const formIdPrefix = `guest-${index}`;
-
-    const REQUIRED = ["arrival_day", "accommodation", "food_selection"]
+    const theme = useTheme()
+    const REQUIRED = ["arrival_day", "food_selection"]
     const hasAllKeys = REQUIRED.every(key => key in formData);
     const [disabledAll, setDisabledAll] = useState(false)
 
-    useEffect(()=>{
-        handleChange({target: {name: 'notAttending', value: "yes"}}, guest)
+    useEffect(() => {
+        handleChange({ target: { name: 'notAttending', value: "yes" } }, guest)
     }, [])
 
-    useEffect(()=>{
-        if(!hasAllKeys){
-            if(formData.submit === true){
-                handleChange({target: {name: 'submit', value: false}}, guest)
+    useEffect(() => {
+        if (!hasAllKeys) {
+            if (formData.submit === true) {
+                handleChange({ target: { name: 'submit', value: false } }, guest)
             }
         }
     }, [disabledAll])
+
+    if(tentSelected.selected && tentSelected.guestName !== guest.name){
+        rooms = rooms.filter((room)=> room.id === tentSelected.selectedRoom)
+    }
 
     const updateAttending = (e, guest) => {
         const disabled = e.target.value === 'no' ? true : false
@@ -129,43 +146,50 @@ const RSVPForm = ({ guest, index, formData, handleChange, rooms }) => {
             <Field>
                 <Label>Arrival Day</Label>
                 <Select
-                disabled={disabledAll}
+                    disabled={disabledAll}
                     name="arrival_day"
                     value={formData.arrival_day || ''}
                     onChange={(e) => handleChange(e, guest)}
                     required
                 >
                     <option value="" disabled hidden>Select...</option>
-                    <option value="fri">Friday</option>
-                    <option value="sat">Saturday</option>
+                    <option value="FRI">Friday</option>
+                    <option value="SAT">Saturday</option>
                 </Select>
             </Field>
-
-            <Field>
+            {(formData.arrival_day === 'FRI' || !formData.arrival_day) && <Field>
                 <Label>
                     <Checkbox
-                    disabled={disabledAll}
-                        name="bringing_food"
-                        checked={formData.bringing_food || false}
+                        disabled={disabledAll}
+                        name="purchasing_food"
+                        checked={formData.purchasing_food || false}
                         onChange={(e) => handleChange(e, guest)}
                     />
-                    Bringing Food?
+                    Would you like to purchase food Friday Night? <TooltipInfo
+                        message="On Friday night we will have a private company to cater for those who wish to purchase food. 
+  It will be Thai Food and you can find more details below"
+                        linkText="Thai Food Link"
+                        linkUrl="https://example.com/wedding-info"
+                    />
                 </Label>
-            </Field>
+            </Field>}
 
             <Field>
-                <Label>Accommodation</Label>
+                <Label>Accommodation <TooltipInfo
+                        message="Bell Tents come with a supplementary charge of £80 for 2 nights. If one RSVP selects a Bell Tent, it will be selected for all guests. If you do need a bunk as well, then please contact Emily or Tom after submitting."
+                    /></Label>
                 <Select
-                disabled={disabledAll}
-                    name="accommodation"
-                    value={formData.accommodation || ''}
+                    disabled={disabledAll}
+                    name="room"
+                    value={formData.room || (tentSelected && tentSelected) || ''}
                     onChange={(e) => handleChange(e, guest)}
                     required
                 >
-                    <option value="" disabled hidden>Select...</option>
+                    {tentSelected.selected && tentSelected.guestName === guest.name && <option value={-1} >Not Required</option>}
+                    {!tentSelected && <option value={-1} >Not Required</option>}
                     {rooms.map((room) => (
                         <option key={room.id} value={room.id} disabled={room.available - room.selected.length === 0}>
-                            {room.name} ({room.type}) {room.id !== parseInt(formData.accommodation) && <>{room.available - room.selected.length} of {room.total} available</>}
+                            {room.name} {room.name !== "NOT REQUIRED" && `(${room.type})`} {room.id !== parseInt(formData.room) && room.name !== "NOT REQUIRED" && <>{room.available - room.selected.length} of {room.total} available</>}
                         </option>
                     ))}
                 </Select>
@@ -174,7 +198,7 @@ const RSVPForm = ({ guest, index, formData, handleChange, rooms }) => {
             <Field>
                 <Label>Favourite Song</Label>
                 <Input
-                disabled={disabledAll}
+                    disabled={disabledAll}
                     name="favourite_song"
                     value={formData.favourite_song || ''}
                     onChange={(e) => handleChange(e, guest)}
@@ -182,36 +206,52 @@ const RSVPForm = ({ guest, index, formData, handleChange, rooms }) => {
             </Field>
 
             <Field>
-                <Label>Allergies</Label>
-                <Select
-                disabled={disabledAll}
-                    name="allergies"
-                    value={formData.allergies || ''}
-                    onChange={(e) => handleChange(e, guest)}
-                >
-                    <option value="">None</option>
-                    <option value="nuts">Nuts</option>
-                    <option value="gluten">Gluten</option>
-                    <option value="dairy">Dairy</option>
-                    <option value="shellfish">Shellfish</option>
-                </Select>
+                {/* <FormControl sx={{ m: 3 }} component="fieldset" variant="standard"> */}
+                    <Label>Allergies</Label>
+                    <FormGroup sx={{m: 1, display: 'flex', flexDirection:'row'}}>
+                        {
+                            Object.entries(allergies).map((allergy) => {
+                                console.log(allergy)
+                                return (
+                                    <FormControlLabel
+                                    sx={{mr: theme.spacing.lg}}
+                                        control={
+                                            <Checkbox  disabled={disabledAll} sx={{m: theme.spacing.lg}} checked={formData.allergies?.includes(allergy[0])} onChange={(e) => handleChange({ target: { id: allergy[0], value: e.target.checked, name: "allergies" } }, guest)} name="allergies" />
+                                        }
+                                        label={allergy[1]}
+                                    />
+                                )
+                            })
+                        }
+                    </FormGroup>
+                {/* </FormControl> */}
             </Field>
 
             <Field>
                 <Label>Food Preference</Label>
                 <Select
-                disabled={disabledAll}
+                    disabled={disabledAll}
                     name="food_selection"
                     value={formData.food_selection || ''}
                     onChange={(e) => handleChange(e, guest)}
                     required
                 >
                     <option value="" disabled hidden>Select...</option>
-                    <option value="veggie">Vegetarian</option>
-                    <option value="vegan">Vegan</option>
-                    <option value="meat">Meat</option>
-                    <option value="fish">Fish</option>
+                    <option value="VEGGIE">Vegetarian</option>
+                    <option value="VEGAN">Vegan</option>
+                    <option value="MEAT">Meat</option>
                 </Select>
+            </Field>
+
+            <Field>
+                <Label>Leave a Message</Label>
+                <MultilineInput
+                disabled={disabledAll}
+                name="message"
+                value={formData.message || ''}
+                onChange={(e) => handleChange(e, guest)}
+                placeholder="Type your message here..."
+            />
             </Field>
 
             <Field>
@@ -220,7 +260,6 @@ const RSVPForm = ({ guest, index, formData, handleChange, rooms }) => {
                     {"Completed Form"}
                 </ToggleWrapper>
             </Field>
-
 
         </FormWrapper>
     );

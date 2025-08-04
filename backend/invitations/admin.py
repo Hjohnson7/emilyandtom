@@ -8,8 +8,8 @@ class AllergyAdmin(admin.ModelAdmin):
 
 
 class RSVPAdmin(admin.ModelAdmin):
-    list_display = ['name', 'arrival_day', 'accommodation', 'food_selection', 'room', 'timestamp']
-    list_filter = ['arrival_day', 'accommodation', 'food_selection', 'room']
+    list_display = ['name', 'arrival_day', 'food_selection', 'room', 'timestamp']
+    list_filter = ['arrival_day', 'food_selection', 'room']
     search_fields = ['name', 'favourite_song']
     autocomplete_fields = ['user', 'allergies', 'room']
     readonly_fields = ['timestamp']

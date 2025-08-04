@@ -30,7 +30,8 @@ urlpatterns = [
     path('api/auth/', include('djoser.urls')),
     path('api/auth/', include('djoser.urls.jwt')),
     path('api/messages/', include('messaging.urls')),
-    path('api/invitations/', include('invitations.urls'))
+    path('api/invitations/', include('invitations.urls')),
+    path('api/accounts/', include('accounts.urls')),
 ]
 
 if settings.DEBUG:

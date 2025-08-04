@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>New RSVP Notification</title>
+  <style>
+    body { font-family: system-ui,-apple-system,BlinkMacSystemFont,sans-serif; background: #fafafa; margin:0; padding:0; }
+    .container { max-width: 600px; margin: 24px auto; background: #ffffff; border-radius: 8px; padding: 24px; box-shadow: 0 12px 40px rgba(0,0,0,0.04); }
+    .header { border-bottom: 1px solid #e6e6eb; padding-bottom: 12px; margin-bottom: 16px; }
+    .section { margin-bottom: 16px; }
+    .label { font-weight: 600; }
+    .value { margin-left: 6px; }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 12px; background: #e8e6f3; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>New RSVP: {{ attendee_name }}</h2>
+      <p>Status: <span class="badge">{{ attending_text }}</span></p>
+    </div>
+    <div class="section">
+      <p><span class="label">Role:</span> <span class="value">{{ role }}</span></p>
+      <p><span class="label">Timestamp:</span> <span class="value">{{ timestamp }}</span></p>
+    </div>
+    {% if is_attending %}
+      <div class="section">
+        <p><strong>Details:</strong></p>
+        <p><span class="label">Arrival day:</span> <span class="value">{{ arrival_day }}</span></p>
+        <p><span class="label">Food selection:</span> <span class="value">{{ food_selection }}</span></p>
+        <p><span class="label">Allergies:</span> <span class="value">{{ allergies|default:"None" }}</span></p>
+        <p><span class="label">Favourite song:</span> <span class="value">{{ favourite_song|default:"(none)" }}</span></p>
+        <p><span class="label">Message:</span> <span class="value">{{ message|default:"(none)" }}</span></p>
+      </div>
+    {% endif %}
+    <div class="section">
+      <p>-- End of RSVP --</p>
+    </div>
+  </div>
+</body>
+</html>

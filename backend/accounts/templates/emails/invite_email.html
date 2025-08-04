@@ -5,7 +5,7 @@
   <title>You're Invited!</title>
   <style>
     body {
-      background-color: #FFF5F5;
+      background-color: #698A65;
       color: #3E513C;
       font-family: 'Open Sans', sans-serif;
       padding: 2rem;
@@ -13,7 +13,7 @@
     }
     .container {
       background-color: #FFFFFF;
-      border: 1px solid #FFD1DC;
+      border: 1px solid #698A65;
       border-radius: 16px;
       padding: 2rem;
       max-width: 600px;
@@ -27,8 +27,8 @@
       text-align: center;
     }
     .cta {
-      background-color: #FADADD;
-      color: #3E513C;
+      background-color: #3E513C;
+      color: white;
       display: inline-block;
       padding: 0.75rem 1.5rem;
       text-decoration: none;
@@ -49,7 +49,8 @@
   <div class="container">
     <div class="header">You're Invited to Emily & Tom's Wedding 🎉</div>
     <p>Hi {{ name }},</p>
-    <p>We're so excited to invite you to our wedding! Please log in to your personal wedding portal to RSVP and explore event details.</p>
+
+    <p>We're so excited to invite you{{extras}} to our wedding! Please log in to your personal wedding portal to RSVP and explore event details.</p>
 
     <div class="credentials">
       <p><strong>Email:</strong> {{ email }}</p>

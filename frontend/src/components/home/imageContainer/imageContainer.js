@@ -37,14 +37,15 @@ const Container = styled.section`
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: ${({ theme }) => theme.spacing.lg};
   padding: ${({ theme }) => theme.spacing.xxxl};
+  justify-content: center; /* centers the track group, so wrapped single items aren’t stuck left */
 `;
 
 const ImageContainer = () => {
-    const IMAGES = ['homepage2.JPG', 'homepage3.JPG', 'homepage4.JPG'];
+    const IMAGES = ['homepage2_new.JPG', 'homepage3_new.JPG', 'homepage4_new.JPG'];
     const refs = useRef([]);
     const [visibleStates, setVisibleStates] = useState(new Array(IMAGES.length).fill(false));
     const breakpoint = useBreakpoint() 
-    const sizeSmall = breakpoint !== 'xs' || breakpoint !== 'sm'
+    const sizeSmall = breakpoint === 'xs' || breakpoint === 'sm';
 
     useEffect(() => {
         const observers = refs.current.map((ref, i) => {
@@ -78,8 +79,8 @@ const ImageContainer = () => {
                         src={`/static/frontend/images/${image}`}
                         alt="emily and tom"
                         isVisible={visibleStates[i]}
+                        sizeSmall={sizeSmall}
                         index={i}
-                        size={sizeSmall}
                     />
                 </ImageBox>
             ))}

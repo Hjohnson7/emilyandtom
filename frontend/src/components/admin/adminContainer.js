@@ -1,20 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     AppBar,
     Box,
-    Toolbar,
     Typography,
-    IconButton,
     Drawer,
     List,
     ListItem,
     ListItemButton,
     ListItemText,
-    useMediaQuery,
+    Button
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
 import styled, { useTheme } from 'styled-components';
 import useBreakpoint from '../../hooks/useBreakPoints';
+import RSVPAdmin from './rsvp-admin';
+import { useAuth } from '../../contexts/authContext';
+import { useNavigate } from 'react-router-dom';
+import WeddingUpdateForm from './update-guests';
+import RSVPAnalyticsDashboard from './dashboardPage';
+import UserDetails from './guestDetails';
 
 const drawerWidth = 240;
 
@@ -30,10 +33,6 @@ const Content = styled(Box)`
     background-color: ${({ theme }) => theme.colors.backgroundMain};
 `;
 
-const NavBar = styled(AppBar)`
-    background-color: ${({ theme }) => theme.colors.backgroundDarker} !important;
-    color: white;
-`;
 
 const DrawerContent = ({ pages, handleNavClick }) => (
     <Box sx={{ width: drawerWidth }}>
@@ -53,14 +52,23 @@ const AdminContainer = () => {
     const theme = useTheme();
     const breakpoint = useBreakpoint()
     const isMdUp = breakpoint !== 'xs' && breakpoint !== 'sm'
-    const [mobileOpen, setMobileOpen] = useState(true);
+    const [mobileOpen, setMobileOpen] = useState(false);
     const [selectedPage, setSelectedPage] = useState('Dashboard');
+    const navigate = useNavigate()
+    const { user } = useAuth()
+
+    useEffect(() => {
+        if(!user){
+            navigate('/')
+        }
+    }, [user])
+
 
     const pages = [
-        { label: 'Dashboard', component: <Typography>Welcome to the Admin Dashboard</Typography> },
-        { label: 'Guests', component: <Typography>Guest List Management</Typography> },
-        { label: 'Rooms', component: <Typography>Room Allocations</Typography> },
-        { label: 'RSVPs', component: <Typography>RSVP Overview</Typography> },
+        { label: 'Dashboard', component: <RSVPAnalyticsDashboard /> },
+        { label: 'Guests', component: <UserDetails/> },
+        { label: 'Send Updates', component: <WeddingUpdateForm /> },
+        { label: 'Send RSVPs', component: <RSVPAdmin/> },
         // Add more as needed
     ];
 
@@ -74,26 +82,10 @@ const AdminContainer = () => {
 
     return (
         <PageContainer>
-            {/* <NavBar position="fixed">
-                <Toolbar>
-                    {!isMdUp && (
-                        <IconButton
-                            color="inherit"
-                            edge="start"
-                            onClick={handleDrawerToggle}
-                            sx={{ mr: 2 }}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                    )}
-                    <Typography variant="h6" noWrap>
-                        Admin Panel — {selectedPage}
-                    </Typography>
-                </Toolbar>
-            </NavBar> */}
 
             <Box component="nav" sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}>
                 {/* Mobile Drawer */}
+
                 {!isMdUp && (
                     <Drawer
                         variant="temporary"
@@ -133,6 +125,7 @@ const AdminContainer = () => {
             </Box>
 
             <Content>
+            {!isMdUp && <Button onClick={handleDrawerToggle}>Open Navigation</Button>}
                 {currentContent}
             </Content>
         </PageContainer>

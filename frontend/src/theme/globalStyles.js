@@ -39,7 +39,6 @@ const GlobalStyle = createGlobalStyle`
   .inner {
     background: ${({ theme }) => theme.colors.background};
     color: ${({ theme }) => theme.colors.text};
-    
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -75,7 +74,6 @@ const GlobalStyle = createGlobalStyle`
     font-size: 1rem;
     padding: 0.5rem 1rem;
     cursor: pointer;
-
     @media (max-width: 480px) {
       font-size: 0.95rem;
       padding: 0.4rem 0.8rem;

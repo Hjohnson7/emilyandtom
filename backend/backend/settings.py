@@ -19,6 +19,7 @@ from decouple import config
 BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -34,6 +35,8 @@ DEBUG = False if PRODUCTION else True
 ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS').split(',') if PRODUCTION else ['*'] 
 
 # Application definition
+
+HOST = config('HOST')
 
 INSTALLED_APPS = [
     'django.contrib.admin',

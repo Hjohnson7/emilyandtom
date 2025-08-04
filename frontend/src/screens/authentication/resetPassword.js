@@ -66,7 +66,7 @@ const ResetPasswordPage = () => {
       >
         <FormContainer elevation={3}>
             <Typography variant="h5" gutterBottom>
-                Sign Up
+                Update Password
             </Typography>
             <Box component="form" onSubmit={onSubmit}>
                 <Grid item >

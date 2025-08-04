@@ -116,10 +116,13 @@ const ScheduleOfEvents = () => {
     const [ref, inView] = useInView({ threshold: 0.2 });
 
     const schedule = [
-        { time: "4:00 PM", title: "COCKTAILS" },
-        { time: "5:00 PM", title: "WEDDING CEREMONY" },
-        { time: "6:00 PM", title: "RECEPTION" },
-        { time: "8:00 PM", title: "AFTERPARTY" },
+        { time: "Friday Evening", title: "GUESTS ARRIVE" },
+        { time: "6:00 - 9:00 PM", title: "FOOD AVAILABLE" },
+        { time: "Saturday morning", title: "FREE TIME TO EXPLORE WILDERNESS" },
+        { time: "Saturday Midday", title: "COCKTAIL CELEBRATION & BBQ" },
+        { time: "Saturday Evening", title: "FOOT STOMPNIG TUNES" },
+        { time: "Sunday Morning", title: "BREAKFAST" },
+        { time: "Sunday Afternoon", title: "GUESTS DEPART" },
     ];
 
     return (

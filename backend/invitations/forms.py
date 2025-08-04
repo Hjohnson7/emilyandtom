@@ -7,16 +7,14 @@ class RSVPForm(forms.ModelForm):
         fields = [
             'name',
             'arrival_day',
-            'bringing_food',
-            'accommodation',
+            'purchasing_food',
             'favourite_song',
             'allergies',
             'food_selection'
         ]
         widgets = {
             'arrival_day': forms.Select(),
-            'bringing_food': forms.CheckboxInput(),
-            'accommodation': forms.Select(),
+            'purchasing_food': forms.CheckboxInput(),
             'allergies': forms.Select(),
             'food_selection': forms.Select(),
         }

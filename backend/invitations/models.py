@@ -85,11 +85,11 @@ class RSVP(models.Model):
     
     name = models.CharField(max_length=255)
     arrival_day = models.CharField(max_length=3, choices=ARRIVAL_DAYS)
-    bringing_food = models.BooleanField(default=False)
-    accommodation = models.CharField(max_length=14, choices=ACCOMMODATION_CHOICES)
+    purchasing_food = models.BooleanField(default=False)
     favourite_song = models.CharField(max_length=255, blank=True)
     allergies = models.ManyToManyField(Allergy, blank=True)
     food_selection = models.CharField(max_length=10, choices=FOOD_CHOICES)
+    message = models.CharField(max_length=300, blank=True, null=True)
 
     # Booking a room
     room = models.ForeignKey(Room, null=True, blank=True, on_delete=models.SET_NULL, related_name='guests')

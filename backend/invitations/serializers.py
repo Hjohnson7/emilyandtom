@@ -11,6 +11,7 @@ class RSVPSerializer(serializers.ModelSerializer):
         queryset=Allergy.objects.all(),
         slug_field='name'
     )
+    room_name = serializers.SerializerMethodField()
     room = serializers.StringRelatedField()
 
     class Meta:
@@ -24,12 +25,13 @@ class RSVPSerializer(serializers.ModelSerializer):
             'partner_name',
             'child_name',
             'arrival_day',
-            'bringing_food',
-            'accommodation',
+            'purchasing_food',
             'favourite_song',
             'allergies',
             'food_selection',
+            'room_name',
             'room',
+            'message'
         ]
 
     def get_user_name(self, obj):
@@ -43,3 +45,12 @@ class RSVPSerializer(serializers.ModelSerializer):
 
     def get_child_name(self, obj):
         return obj.child.name if obj.child else None
+    
+    def get_room_name(self, obj):
+        return obj.room.name if obj.room else None
+
+
+class createRSVPSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RSVP
+        fields = '__all__'

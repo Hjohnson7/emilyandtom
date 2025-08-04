@@ -32,6 +32,7 @@ const RSVPConfirmationDialog = ({
   onClose,
   onConfirm,
   content,
+  canSubmit
 }) => {
   const theme = useTheme();
 
@@ -42,7 +43,7 @@ const RSVPConfirmationDialog = ({
       aria-labelledby="submit-warning-dialog"
     >
       <ThemedDialogTitle id="submit-warning-dialog">
-        Confirm Submission
+        {canSubmit ? 'Confirm Submission' : 'Incomplete Submission'}
       </ThemedDialogTitle>
       <DialogContent>
         <ThemedDialogContentText>{content}</ThemedDialogContentText>
@@ -52,21 +53,23 @@ const RSVPConfirmationDialog = ({
           onClick={onClose}
           sx={{ color: theme.colors.backgroundLighter }}
         >
-          Cancel
+          {canSubmit ? 'Cancel' : 'Back'}
         </Button>
-        <Button
-          onClick={onConfirm}
-          autoFocus
-          sx={{
-            backgroundColor: theme.colors.primary,
-            color: theme.colors.backgroundMain,
-            '&:hover': {
-              backgroundColor: theme.colors.primaryDark,
-            },
-          }}
-        >
-          Submit
-        </Button>
+        {canSubmit && (
+            <Button
+            onClick={onConfirm}
+            autoFocus
+            sx={{
+              backgroundColor: theme.colors.primary,
+              color: theme.colors.backgroundMain,
+              '&:hover': {
+                backgroundColor: theme.colors.primaryDark,
+              },
+            }}
+          >
+            Submit
+          </Button>
+        )}
       </DialogActions>
     </ThemedDialog>
   );

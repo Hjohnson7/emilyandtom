@@ -1,7 +1,10 @@
-import React from 'react';
-import styled from 'styled-components';
+import React, {useState, useEffect} from 'react';
+import styled, { useTheme } from 'styled-components';
 import { motion } from 'framer-motion';
 import useInView from '../../../hooks/inViewHook'; // Adjust the path as needed
+import { Button, Box } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import api from '../../../constants/api';
 
 const FAQ_DATA = [
     {
@@ -12,14 +15,7 @@ const FAQ_DATA = [
         question: "Can I bring a plus one?",
         answer: "Please check your invitation — it will indicate whether a plus one has been included. If you're unsure, feel free to contact us."
     },
-    {
-        question: "Are children invited?",
-        answer: "We love your little ones, but our wedding will be an adults-only celebration. Thank you for understanding!"
-    },
-    {
-        question: "What time should I arrive?",
-        answer: "The ceremony will begin at 5:00 PM. We recommend arriving by 4:30 PM to find your seat and settle in."
-    },
+
     // {
     //     question: "Is there parking at the venue?",
     //     answer: "Yes! There is free guest parking available at the venue. Signs and attendants will guide you upon arrival."
@@ -81,13 +77,59 @@ const FAQItem = styled(motion.div)`
   }
 `;
 
+const ButtonDiv = styled(motion.div)`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: auto;
+`
+
+const SeeMore = styled.button`
+  margin-top: 0.8rem;
+  background: ${({ theme }) => theme.colors.backgroundMain};
+  border: none;
+  color: ${({ theme }) => theme.colors.text};
+  padding: 0.5rem;
+  border-radius: ${({ theme }) => theme.borders.radius};
+  cursor: pointer;
+  width: 25%;
+  &:hover {
+    background: ${({ theme }) => theme.colors.primaryLight};
+  }
+  text-align: center;
+  margin-left: auto !important;
+  margin-right: auto;
+  justify-content: center;
+`;
+
+
+
 const FaqSection = () => {
     const [ref, isVisible] = useInView({ threshold: 0.2 });
+    const [faqs, setFaqs] = useState([])
+    const navigate = useNavigate()
+
+    const fetchFAQs = async () => {
+      try {
+        const res = await api.get("/messages/faqs/");
+        console.log(res)
+        // expect array of { question, answer } or map/normalize as needed
+        setFaqs(Array.isArray(res.data) && res.data.length ? res.data : FAQ_DATA);
+      } catch (e) {
+        console.error("Failed to fetch FAQs", e);
+        setFaqs(FAQ_DATA); // fallback
+      } 
+    };
+  
+    useEffect(() => {
+      fetchFAQs();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <Section ref={ref}>
             <Header>FAQ</Header>
-            {FAQ_DATA.map((faq, index) => (
+            {faqs.map((faq, index) => (
                 <FAQItem
                     key={index}
                     initial={{ opacity: 0, y: 30 }}
@@ -98,6 +140,16 @@ const FaqSection = () => {
                     <p>{faq.answer}</p>
                 </FAQItem>
             ))}
+            <ButtonDiv  
+                initial={{ opacity: 0, y: 30 }}
+                animate={isVisible ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 5 * 0.2 }}
+                >
+            <SeeMore
+                 onClick={()=> {navigate('/faqs')}}>
+                See All
+            </SeeMore>
+            </ButtonDiv>
         </Section>
     );
 };

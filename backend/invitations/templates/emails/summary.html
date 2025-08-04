@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Your RSVP Summary</title>
+  <style>
+    body { font-family: system-ui,-apple-system,BlinkMacSystemFont,sans-serif; background: #f0f2f8; margin:0; padding:0; }
+    .card { max-width: 650px; margin: 32px auto; background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 16px 48px rgba(0,0,0,0.06); }
+    .header { background: #3E513C; color: #fff; padding: 28px; text-align: center; }
+    .content { padding: 32px; color: #1f2d3a; line-height: 1.5; }
+    .section { margin-bottom: 24px; }
+    .subheader { font-size: 18px; font-weight: 600; margin-bottom: 12px; }
+    .item { border: 1px solid #e6e6eb; border-radius: 8px; padding: 16px; margin-bottom: 14px; background: #faf9fd; }
+    .label { font-weight: 600; }
+    .footer { background: #f7f7fa; padding: 16px; text-align: center; font-size: 13px; color: #555; }
+    .btn { display: inline-block; padding: 12px 22px; background: #3E513C; color: white; text-decoration: none; border-radius: 8px; margin-top: 8px; }
+    .tag { display: inline-block; padding: 4px 10px; background: #e8e6f3; border-radius: 999px; font-size: 12px; margin-right: 6px; }
+    .small { font-size: 12px; color: #777; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <h1>RSVP Summary</h1>
+      <p>Thanks for confirming—here’s what we received:</p>
+    </div>
+    <div class="content">
+      <div class="section">
+        <p>Hi <strong>{{ primary_name }}</strong>,</p>
+        <p>We’ve processed the following RSVP entries associated with you. {% if require_payment %} Please note as you selected the bell tent, there is the additional fee of £80. Please see the bottom of the email for details {% endif %}</p>
+      </div>
+
+      {% for entry in entries %}
+      <div class="item">
+        <div class="subheader">
+          {{ entry.name }}{% if entry.role != "user" %} ({{ entry.role|capfirst }}){% endif %}
+        </div>
+        <p><span class="label">Attending:</span> {{ entry.attending_text }}</p>
+        {% if entry.is_attending %}
+          <p><span class="label">Arrival day:</span> {{ entry.arrival_day }}</p>
+          <p><span class="label">Accomodation:</span> {{ entry.room }}</p>
+          <p><span class="label">Food selection:</span> {{ entry.food_selection }}</p>
+          <p><span class="label">Allergies:</span> {{ entry.allergies|default:"None" }}</p>
+          <p><span class="label">Purchasing food Friday</span>{{entry.purchasing_food}}</p>
+        {% endif %}
+        {% if entry.message %}
+          <p><span class="label">Message:</span> {{ entry.message }}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+
+      {% if require_payment %}
+      <div class="section">
+          You have selected a bell tent. Please pay the sum of £80 to Tom and Emily.
+      </div>
+      {% endif %}
+
+      <div class="section">
+        <p>If anything needs to be updated, reply to this email or visit your RSVP page.</p>
+        {% if update_link %}
+          <p style="text-align:center;"><a href="{{ update_link }}" class="btn">Update RSVP</a></p>
+        {% endif %}
+      </div>
+    </div>
+    <div class="footer">
+      <p class="small">Sent on {{ timestamp }}</p>
+    </div>
+  </div>
+</body>
+</html>

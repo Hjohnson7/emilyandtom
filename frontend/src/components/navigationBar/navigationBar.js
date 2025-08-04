@@ -14,14 +14,14 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import styled from 'styled-components';
-import { useTheme } from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import useBreakpoint from '../../hooks/useBreakPoints';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/authContext';
 import LogoutIcon from '@mui/icons-material/Logout';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 const Logo = styled(Typography)`
   font-family: ${({ theme }) => theme.typography.fontFamily};
@@ -39,7 +39,7 @@ width: ${({ theme }) => theme.spacing.xxxl};
 `
 
 const NavButton = styled(Button)`
-  color: ${({ theme }) => theme.colors.text};
+  color: ${({ theme }) => theme.colors.text} !important;
   text-transform: none;
   margin-left: ${({ theme }) => theme.spacing.md};
 `;
@@ -65,7 +65,7 @@ const NavBar = () => {
         navigate(ref)
     }
 
-    const navLinks = [{ name: 'FAQs', link: 'faqs' }, { name: 'Travel', link: 'travel' }, { name: 'Accommodation', link: 'accomodation' }, { name: 'About', link: 'about' }];
+    const navLinks = [{ name: 'FAQs', link: 'faqs' }, { name: 'Travel', link: 'travel' }, { name: 'Accommodation', link: 'accomodation' }];
 
     return (
         <>
@@ -85,17 +85,21 @@ const NavBar = () => {
                                 <NavButton key={link.name} theme={theme} onClick={() => goTo(link.link)}>{link.name}</NavButton>
                             ))}
                             {user &&
+                                <>
+                                <NavButton key={'messageBoard'} theme={theme} onClick={() => goTo('message-board')}>Message Board</NavButton>
                                 <NavButton key={'rsvp'} theme={theme} onClick={() => goTo('rsvp')}>RSVP</NavButton>
+                                </>
+                                
                             }
                         </Box>
                     )}
                     {user?.is_staff && (
                          <>
-                         <Tooltip title="Admin"><IconButton color="inherit" onClick={goToAdmin}>
-                             <SupervisorAccountIcon />
+                         <Tooltip title="Manage"><IconButton color="inherit" onClick={() => navigate('admin-page')}>
+                         <SupervisorAccountIcon />
                          </IconButton></Tooltip>
-                         <Tooltip title="Analytics"><IconButton color="inherit" onClick={() => navigate('admin-page')}>
-                         <BarChartIcon />
+                         <Tooltip title="Admin"><IconButton color="inherit" onClick={goToAdmin}>
+                         <AdminPanelSettingsIcon />
                          </IconButton></Tooltip>
                          </>
                     )}
@@ -116,10 +120,25 @@ const NavBar = () => {
                     ))}
 
                     {user &&
+                    <>
+                    <ListItem button key={'message-board'} onClick={handleDrawerToggle}>
+                            <ListItemText primary={'Message Board'} onClick={() => goTo('message-board')} />
+                        </ListItem>
                         <ListItem button key={'rsvp'} onClick={handleDrawerToggle}>
                             <ListItemText primary={'rsvp'} onClick={() => goTo('rsvp')} />
                         </ListItem>
+                    </>
                     }
+                    {user?.is_staff && (
+                         <>
+                         <ListItem button key={'manage-wedding'} onClick={handleDrawerToggle}>
+                            <AccountCircleIcon onClick={() => navigate('admin-page')}/> <ListItemText primary={'Message Board'} onClick={() => navigate('admin-page')} />
+                             </ListItem>
+                             <ListItem button key={'admin-page'} onClick={handleDrawerToggle}>
+                             <SupervisorAccountIcon onClick={goToAdmin}/> <ListItemText primary={'rsvp'} onClick={goToAdmin} />
+                             </ListItem>
+                         </>
+                    )}
 
                 </List>
             </Drawer>

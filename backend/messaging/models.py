@@ -18,7 +18,7 @@ class Message(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
     category = models.CharField(max_length=15, choices=CATEGORY_CHOICES)
     message = models.TextField()
-    
+    pinned = models.BooleanField(default=False)
     # New field to support replies
     parent = models.ForeignKey(
         'self',
@@ -53,3 +53,4 @@ class FAQS(models.Model):
     question = models.CharField()
     category = models.CharField(max_length=15, choices=FAQ_CHOICES)
     answer = models.CharField()
+    main_screen = models.BooleanField(default=False)

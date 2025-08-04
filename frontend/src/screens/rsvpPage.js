@@ -16,8 +16,6 @@ import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import styled, { useTheme } from 'styled-components';
 import useBreakpoint from '../hooks/useBreakPoints';
 import RSVPConfirmationDialog from '../components/rsvpForm/dialogPopup';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 const PageContainer = styled(Box)`
     min-height: 100vh;
@@ -40,11 +38,10 @@ const TextDisplay = styled(Typography)`
 
 const StepperContainer = styled.div`
   display: none;
-
   @media (min-width: 768px) {
     display: flex;
     justify-content: center;
-    margin-top: ${({ theme }) => theme.spacing.lg};
+    margin-bottom: ${({ theme }) => theme.spacing.lg};
   }
 `;
 
@@ -58,6 +55,10 @@ const RSVPPage = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [dialogContent, setDialogContent] = useState('');
     const [dataToSubmit, setDataToSubmit] = useState([]);
+    const [allComplete, setAllComplete] = useState(false)
+    const [allergies, setAllergies] = useState({})
+    const [canSubmit, setCanSubmit] = useState(false)
+    const [tentSelected, setTentSelected] = useState(false)
     const theme = useTheme()
 
     const { user } = useAuth()
@@ -80,22 +81,49 @@ const RSVPPage = () => {
             setRoomsAvailable(res.data)
         })
 
+        axios.get('api/invitations/get-allergies/').then(res => {
+            setAllergies(res.data)
+        })
+
+
     }, [user])
 
+
     const handleChange = (e, guest) => {
-        const { name, value, type, checked } = e.target || {};
+        const { name, value, type, checked, id } = e.target || {};
         const original = { ...formData };
         const curr = original[guest.name] ? { ...original[guest.name] } : {};
 
-        const previousRoomId = name === 'accommodation' && curr.accommodation ? parseInt(curr.accommodation) : null;
-        curr[name] = type === 'checkbox' ? checked : value;
-        original[guest.name] = curr;
+        const previousRoomId = name === 'room' && curr.room ? parseInt(curr.room) : null;
+        if(name === 'allergies'){
+            if(curr['allergies']){
+                if(value === true){
+                    curr['allergies'].push(id)
+                }else{
+                    curr['allergies'].pop(id)
+                }
+            }else{
+                curr['allergies'] = [id]
+            }
+        } else{
+            curr[name] = type === 'checkbox' ? checked : value;
+        }
 
-        if (name === 'accommodation') {
+        original[guest.name] = curr;
+        original[guest.name].user_info = guest
+
+        if (name === 'room') {
             const selectedRoomId = parseInt(value);
             const updatedRooms = roomsAvailable.map((room) => {
                 const selected = [...room.selected];
-                if (room.id === selectedRoomId) selected.push(1);
+                if (room.id === selectedRoomId) {
+                    selected.push(1)
+                    if(room.type === 'TENT'){
+                        setTentSelected({selected: true, selectedRoom: selectedRoomId, guestName: guest.name})
+                    } else{
+                        setTentSelected({selected: false, selectedRoom: 0, guestName: null})
+                    }
+                };
                 if (room.id === previousRoomId && previousRoomId !== selectedRoomId) selected.pop();
                 return { ...room, selected };
             });
@@ -108,8 +136,6 @@ const RSVPPage = () => {
                 completed++;
             }
         }
-        console.log(name, value, type, checked)
-        console.log(original)
         setFormData(original);
         setCompletedForms(completed);
     };
@@ -125,12 +151,21 @@ const RSVPPage = () => {
 
         formEntries.forEach(([guestName, form]) => {
             if (form.notAttending === 'no' && form.submit) {
-                toSubmit.push({ name: guestName, notAttending: true });
+                toSubmit.push({ name: guestName, notAttending: true, user_info: form.user_info });
                 notAttending.push(guestName);
                 return;
             }
 
             if (form.submit) {
+                if(form.arrival_day === 'SAT' && form.purchasing_food){
+                    form.purchasing_food = false
+                }
+                if(form.room === -1){
+                    delete form.room
+                }
+                if(tentSelected.selected){
+                    form.room = tentSelected.selectedRoom
+                }
                 toSubmit.push({ name: guestName, ...form });
             } else {
                 const hasData = Object.entries(form).some(
@@ -155,8 +190,13 @@ const RSVPPage = () => {
             if (notAttending.length > 0) {
                 message += `Marked as not attending: ${notAttending.join(', ')}.\n`;
             }
-
-            message += `Do you want to proceed?`;
+            if(partiallyCompleted.length > 0 || toSubmit.length < totalGuests){
+                message += `Please complete all forms prior to submitting.`
+                setCanSubmit(false)
+            }else{
+                message += `Do you want to proceed?`;
+                setCanSubmit(true)
+            }
             setDialogContent(message);
             setDataToSubmit(toSubmit);
             setOpenDialog(true);
@@ -170,6 +210,10 @@ const RSVPPage = () => {
         try {
             await axios.post('/api/invitations/submit-rsvps/', toSubmit);
             enqueueSnackbar('RSVPs submitted successfully!', { variant: 'success' });
+            axios.get('/api/invitations/get-invitation/').then(res => {
+                setRsvpData(res.data);
+            });
+            setViewCompleted(true)
             // optionally redirect or refetch
         } catch (error) {
             enqueueSnackbar('There was an error submitting your RSVPs.', { variant: 'error' });
@@ -184,12 +228,17 @@ const RSVPPage = () => {
     if (rsvpData.partner?.name) guests.push({ ...rsvpData.partner, role: 'partner' });
     if (Array.isArray(rsvpData.children)) {
         rsvpData.children.forEach((child, idx) =>
-            guests.push({ ...child, role: 'child', id: idx })
+            guests.push({ ...child, role: 'child', id: child.id })
         );
     }
 
     const rsvpForms = guests.filter((guest) => { return guest.rsvpd === false })
     const rsvpCompleted = guests.filter((guest) => { return guest.rsvpd === true })
+
+    if(rsvpForms.length === 0 && !allComplete){
+        setAllComplete(true)
+        setViewCompleted(true)
+    }
 
     return (
         <PageContainer>
@@ -197,39 +246,20 @@ const RSVPPage = () => {
                 <TextDisplay variant="h4" align="center" gutterBottom>
                     RSVP
                 </TextDisplay>
-
-                <Grid container justifyContent="center" sx={{ mb: 2 }}>
+                {!allComplete && <Grid container justifyContent="center" sx={{ mb: 2 }}>
                     <Button
-                        sx={{ backgroundColor: theme.colors.backgroundDarker }}
+                        sx={{ backgroundColor: theme.colors.backgroundDarker, color: theme.colors.text }}
                         onClick={() => setViewCompleted(!viewCompleted)}
                     >
                         {viewCompleted ? 'View Incomplete Forms' : 'View Completed RSVPs'}
                     </Button>
-                </Grid>
+                </Grid>}
 
                 {!viewCompleted ? (
                     <>
                         <TextDisplay variant="subtitle1" align="center" gutterBottom>
-                            {`Guest ${activeStep + 1} of ${rsvpForms.length}`}
+                            {`Guest ${activeStep + 1} of ${rsvpForms.length}`} {!isLarger && rsvpForms.length > 1 && <><br></br>(please swipe)</>}
                         </TextDisplay>
-                        <TextDisplay variant="h6" align="center">
-                            {rsvpForms[activeStep]?.name}
-                        </TextDisplay>
-
-                        <SwipeableViews index={activeStep} onChangeIndex={setActiveStep} enableMouseEvents>
-                            {rsvpForms.map((guest, index) => {
-                                const guestData = formData[guest.name] || {};
-                                return (
-                                            <RSVPForm
-                                                rooms={roomsAvailable}
-                                                guest={guest}
-                                                index={index}
-                                                formData={guestData}
-                                                handleChange={handleChange}
-                                            />
-                                );
-                            })}
-                        </SwipeableViews>
 
                         {isLarger && (
                             <StepperContainer>
@@ -271,14 +301,31 @@ const RSVPPage = () => {
                             </StepperContainer>
                         )}
 
-                        <Grid container justifyContent="center" sx={{ mt: 4 }}>
+                        <SwipeableViews index={activeStep} onChangeIndex={setActiveStep} enableMouseEvents>
+                            {rsvpForms.map((guest, index) => {
+                                const guestData = formData[guest.name] || {};
+                                return (
+                                    <RSVPForm
+                                        tentSelected={tentSelected}
+                                        rooms={roomsAvailable}
+                                        guest={guest}
+                                        index={index}
+                                        formData={guestData}
+                                        handleChange={handleChange}
+                                        allergies={allergies}
+                                    />
+                                );
+                            })}
+                        </SwipeableViews>
+
+                        <Grid container justifyContent="center" sx={{ pt: theme.spacing.md, pb: theme.spacing.lg }}>
                             <Button
                                 variant="contained"
                                 color="secondary"
                                 onClick={handleSubmitAll}
-                                fullWidth
+                                sx={{ backgroundColor: theme.colors.backgroundMain }}
                             >
-                                Submit All RSVP Forms ({completedForms}/{rsvpForms.length})
+                                Submit Completed RSVP Forms ({completedForms}/{rsvpForms.length})
                             </Button>
                         </Grid>
                     </>
@@ -310,24 +357,27 @@ const RSVPPage = () => {
                                         <Typography variant="h6" gutterBottom>
                                             {guest.name}
                                         </Typography>
-
+                                        {guest.coming ? 
                                         <Grid container spacing={1}>
                                             <Grid item xs={6}>
-                                                <Typography variant="body2"><strong>Arrival Day:</strong> {details.arrival_day}</Typography>
+                                                <Typography variant="body2"><strong>Arrival Day:</strong> {details.arrival_day === 'SAT' ? "Saturday" : "Friday"}</Typography>
                                             </Grid>
 
                                             <Grid item xs={6}>
-                                                <Typography variant="body2"><strong>Accommodation:</strong> {details.accommodation}</Typography>
+                                                <Typography variant="body2"><strong>Accommodation:</strong> {details.room_name ? details.room_name : 'Not Required'}</Typography>
                                             </Grid>
                                             <Grid item xs={6}>
                                                 <Typography variant="body2"><strong>Food Preference:</strong> {details.food_selection}</Typography>
                                             </Grid>
-
+                                            {details.arrival_day === 'FRI' && (
                                             <Grid item xs={6}>
-                                                <Typography variant="body2"><strong>Bringing Food:</strong> {details.bringing_food ? 'Yes' : 'No'}</Typography>
-                                            </Grid>
+                                                <Typography variant="body2"><strong>Purchasing Food Friday:</strong> {details.purchasing_food ? 'Yes' : 'No'}</Typography>
+                                            </Grid>)}
                                             <Grid item xs={6}>
                                                 <Typography variant="body2"><strong>Favourite Song:</strong> {details.favourite_song || '—'}</Typography>
+                                            </Grid>
+                                            <Grid item xs={6}>
+                                                <Typography variant="body2"><strong>Message:</strong> {details.message || '—'}</Typography>
                                             </Grid>
 
                                             <Grid item xs={12}>
@@ -347,6 +397,7 @@ const RSVPPage = () => {
                                                 </Grid>
                                             )}
                                         </Grid>
+                                         : <>Not Attending</>}
                                     </Box>
                                 );
                             })
@@ -363,6 +414,7 @@ const RSVPPage = () => {
                     submitToBackend(dataToSubmit);
                 }}
                 content={dialogContent}
+                canSubmit={canSubmit}
             />
         </PageContainer>
     );

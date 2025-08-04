@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 import {
   Card,
   CardContent,
@@ -10,51 +10,81 @@ import {
   InputLabel,
   FormControl,
   Paper,
+  Box
 } from "@mui/material";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import api from "../../constants/api";
+import PushPinIcon from '@mui/icons-material/PushPin';
+
+// Animations
+const pageVariants = {
+  initial: { y: 50, opacity: 0 },
+  animate: { y: 0, opacity: 1, transition: { duration: 0.6 } },
+};
+
+const messageVariants = {
+  initial: { y: 20, opacity: 0 },
+  animate: (i) => ({
+    y: 0,
+    opacity: 1,
+    transition: { delay: i * 0.1 },
+  }),
+};
 
 // Styled Components
+const PageWrapper = styled(motion.div)`
+  background-color: ${({ theme }) => theme.colors.backgroundLighter};
+  min-height: 100vh;
+  padding: 1rem;
+`;
+
 const MessageList = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.md};
-  padding: ${({ theme }) => theme.spacing.md};
+  margin-top: 1rem;
 `;
 
 const MessageCard = styled(motion(Card))`
   background-color: ${({ theme }) => theme.colors.backgroundDarker};
-  border-left: 4px solid ${({ theme }) => theme.colors.primary};
+  border-left: 4px solid ${({ theme }) => theme.colors.white};
+  border-radius: ${({ theme }) => theme.radius.xxxl};
+  color: white;
 `;
 
-const ReplyCard = styled(MessageCard)`
-  margin-left: 1.5rem;
+const ReplyCard = styled(motion(Card))`
+  margin-left: 1rem;
   margin-top: 0.75rem;
-  padding: 0.5rem;
-  border-left: 3px solid ${({ theme }) => theme.colors.accent};
-  background-color: ${({ theme }) => theme.colors.background};
+  padding: 0.75rem;
+  background-color: ${({ theme }) => theme.colors.backgroundMain};
+  border-left: 3px solid ${({ theme }) => theme.colors.white};
+  border-radius: ${({ theme }) => theme.radius.xxxl};
+  color: black;
+`;
+
+const StyledCardContent = styled(CardContent)`
+  background-color: transparent;
+  padding: ${({ theme }) => theme.spacing.md};
 `;
 
 const Timestamp = styled.div`
-  font-size: 0.75rem;
-  color: ${({ theme }) => theme.colors.muted};
+  font-size: 0.8rem;
   margin-top: 0.5rem;
 `;
 
 const FormWrapper = styled(Paper)`
-  margin: 1rem;
+  margin: 1rem 0;
   padding: 1rem;
-  background-color: ${({ theme }) => theme.colors.backgroundLighter};
+  background-color: ${({ theme }) => theme.colors.backgroundMain};
+  color: black;
   box-shadow: ${({ theme }) => theme.shadows.md};
-  border-radius: ${({ theme }) => theme.radius.md};
-`;
-
-const ReplyToggle = styled(Button)`
-  margin-top: 0.5rem;
+  border-radius: ${({ theme }) => theme.radius.xxxl};
 `;
 
 const MessageForm = ({ onSubmit, parentId, isReply = false, onCancel }) => {
   const [category, setCategory] = useState("GENERAL");
   const [message, setMessage] = useState("");
+  const theme = useTheme();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -91,15 +121,19 @@ const MessageForm = ({ onSubmit, parentId, isReply = false, onCancel }) => {
         required
         sx={{ mt: 2 }}
       />
-      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "1rem" }}>
-        <Button variant="contained" color="primary" type="submit">
-          {isReply ? "Reply" : "Post Message"}
-        </Button>
+      <div style={{ display: "flex", justifyContent: "right", marginTop: "1rem" }}>
         {isReply && (
-          <Button onClick={onCancel} variant="contained" color="primary">
+          <Button onClick={onCancel} variant="outlined" sx={{ mr: 2 }}>
             Cancel
           </Button>
         )}
+        <Button
+          variant="contained"
+          sx={{ backgroundColor: theme.colors.backgroundDarker, color: "white" }}
+          type="submit"
+        >
+          {isReply ? "Reply" : "Post Message"}
+        </Button>
       </div>
     </FormWrapper>
   );
@@ -109,83 +143,99 @@ const MessageBoard = () => {
   const [messages, setMessages] = useState([]);
   const [replyingTo, setReplyingTo] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const theme = useTheme();
 
   useEffect(() => {
-    fetch("/api/messages/get-messages/")
-      .then((res) => res.json())
-      .then(setMessages);
+    api
+      .get("/messages/get-messages/")
+      .then((res) => {
+        setMessages(res.data);
+      })
+      .catch((err) => console.error("Failed to fetch messages", err));
   }, []);
 
   const handleNewMessage = (msgData) => {
-    fetch("/api/messages/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(msgData),
-    })
-      .then((res) => res.json())
-      .then((msg) => {
+    api
+      .post("/messages/messages/", msgData)
+      .then((res) => {
+        const msg = res.data;
         if (msg.parent) {
           setMessages((prev) =>
             prev.map((m) =>
-              m.id === msg.parent ? { ...m, replies: [...(m.replies || []), msg] } : m
+              m.id === msg.parent
+                ? { ...m, replies: [...(m.replies || []), msg] }
+                : m
             )
           );
         } else {
           setMessages((prev) => [msg, ...prev]);
           setShowForm(false);
         }
-      });
+      })
+      .catch((err) => console.error("Failed to post message", err));
   };
 
-
-  const renderReplies = (message) =>
-    message.replies?.map((reply) => (
-      <ReplyCard
-        key={reply.id}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-      >
-        <CardContent>
-          <strong>{reply.user || "Anonymous"}</strong>
-          <div>{reply.message}</div>
-          <Timestamp>{new Date(reply.timestamp).toLocaleString()}</Timestamp>
-        </CardContent>
-      </ReplyCard>
-    ));
+  const renderReplies = (message) => {
+    return message.replies.map((reply, i) => (
+        <ReplyCard
+          key={reply.id}
+          variants={messageVariants}
+          initial="initial"
+          animate="animate"
+          custom={i}
+        >
+          <StyledCardContent>
+            <strong>{reply.user || "Anonymous"}</strong>
+            <div>{reply.message}</div>
+            <Timestamp>{new Date(reply.timestamp).toLocaleString()}</Timestamp>
+          </StyledCardContent>
+        </ReplyCard>
+      ));
+  };
 
   return (
-    <div>
-      <div style={{ padding: "1rem" }}>
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={() => setShowForm(!showForm)}
-          sx={{ mb: 2 }}
-        >
-          {showForm ? "Cancel" : "Add a Message"}
-        </Button>
-        {showForm && <MessageForm onSubmit={handleNewMessage} />}
-      </div>
+    <PageWrapper variants={pageVariants} initial="initial" animate="animate">
+      <Button
+        onClick={() => setShowForm(!showForm)}
+        sx={{
+          mb: 2,
+          color: "white",
+          backgroundColor: theme.colors.backgroundDarker,
+        }}
+      >
+        {showForm ? "Cancel" : "Add a Message"}
+      </Button>
+
+      {showForm && <MessageForm onSubmit={handleNewMessage} />}
 
       <MessageList>
-        {messages.map((msg) =>
-          !msg.parent ? (
+        <AnimatePresence>
+          {messages.map((msg, i) => (
             <MessageCard
               key={msg.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.4 }}
+              variants={messageVariants}
+              initial="initial"
+              animate="animate"
+              exit={{ opacity: 0, y: 20 }}
+              custom={i}
             >
-              <CardContent>
-                <strong>{msg.user || "Anonymous"}</strong> — <em>{msg.category}</em>
+              <StyledCardContent>
+                <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
+                   <div> <strong>{msg.user || "Anonymous"}</strong> —{" "} <em>{msg.category}</em> </div>
+                    <div>{msg.pinned && <PushPinIcon sx={{ transform: 'rotate(45deg)' }} />}</div>
+                </Box>
                 <div>{msg.message}</div>
                 <Timestamp>{new Date(msg.timestamp).toLocaleString()}</Timestamp>
-
-                <ReplyToggle size="small" onClick={() => setReplyingTo(msg.id)}>
+                <Button
+                  onClick={() => setReplyingTo(msg.id)}
+                  sx={{
+                    mt: 1,
+                    color: "black",
+                    backgroundColor: theme.colors.backgroundMain,
+                  }}
+                >
                   Reply
-                </ReplyToggle>
-
+                </Button>
                 {renderReplies(msg)}
                 {replyingTo === msg.id && (
                   <MessageForm
@@ -195,12 +245,12 @@ const MessageBoard = () => {
                     onCancel={() => setReplyingTo(null)}
                   />
                 )}
-              </CardContent>
+              </StyledCardContent>
             </MessageCard>
-          ) : null
-        )}
+          ))}
+        </AnimatePresence>
       </MessageList>
-    </div>
+    </PageWrapper>
   );
 };
 

@@ -14,7 +14,8 @@ const Container = styled.div`
   margin: ${({ theme }) => theme.spacing.xxxl} auto;
   padding: 0 ${({ theme }) => theme.spacing.xxxl};
   @media (max-width: 900px) {
-    padding: 0 ${({ theme }) => theme.spacing.sm};
+    padding: ${({ theme }) => theme.spacing.md} ${({ theme }) => theme.spacing.sm};
+    margin: ${({ theme }) => theme.spacing.md};
   }
 
 `;

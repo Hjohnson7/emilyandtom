@@ -2,32 +2,6 @@ import React, { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import api from "../../constants/api";
 
-const accommodations = [
-  {
-    name:"A",
-    type: "Bell Tent",
-    available: 4,
-    total: 8,
-    image: "/static/frontend/images/accomodation.PNG",
-    occupants: ["Alice Smith", "John Doe", "Emily Grey", "Mike Lee"]
-  },
-  {
-    name: "B",
-    type: "Bunk Room",
-    available: 2,
-    total: 12,
-    image: "/static/frontend/images/accomodation.PNG",
-    occupants: ["Tom Harris", "Nina Patel", "Rachel Yu", "Ben Cox", "Maya Singh", "Luke Taylor", "Anna Kim", "Leo Walker", "Sarah Khan", "Chris Lee"]
-  },
-  {
-    name: "C",
-    type: "Campervan Pitch",
-    available: 1,
-    total: 3,
-    image: "/static/frontend/images/accomodation.PNG",
-    occupants: ["Zoe Allen", "Victor Brown"]
-  }
-];
 
 // Animation
 const fadeInUp = keyframes`
@@ -90,7 +64,7 @@ const ToggleOccupants = styled.button`
   margin-top: 0.8rem;
   background: ${({ theme }) => theme.colors.backgroundLighter};
   border: none;
-  color: ${({ theme }) => theme.colors.text};
+  color: ${({ theme }) => theme.colors.primary};
   padding: 0.5rem;
   border-radius: ${({ theme }) => theme.borders.radius};
   cursor: pointer;
@@ -106,6 +80,13 @@ const OccupantList = styled.ul`
   font-size: 0.875rem;
   color: ${({ theme }) => theme.colors.mutedText};
 `;
+
+const Description = styled.p`
+  margin: 0;
+  font-size: 0.75rem;
+  color: ${({ theme }) => theme.colors.text};
+  font-weight: bold;
+`
 
 const AccommodationGrid = () => {
   const [showOccupants, setShowOccupants] = useState({});
@@ -129,7 +110,8 @@ const AccommodationGrid = () => {
   };
 
   const ImageMap = {
-    'BUNK': '/static/frontend/images/accomodation.PNG'
+    'BUNK': '/static/frontend/images/bunk_room.PNG',
+    'TENT': '/static/frontend/images/accomodation.PNG',
   }
     
 
@@ -139,10 +121,14 @@ const AccommodationGrid = () => {
         <Card key={index} delay={index * 0.2}>
           <Image src={ImageMap[room.type]} alt={room.type} />
           <Content>
+          <Title>{room.name}</Title>
             <Title>{room.type}</Title>
             <Availability>
-              {room.available} / {room.total} beds available
+              {(room.type === 'TENT' && room.occupants.length > 0) ? 'Booked' : `${room.available} / ${room.total} beds available` }
             </Availability>
+            <Description>
+              {room.notes}
+            </Description>
             <ToggleOccupants onClick={() => toggleOccupants(index)}>
               {showOccupants[index] ? "Hide guests" : "View guests"}
             </ToggleOccupants>

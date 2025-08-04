@@ -7,9 +7,9 @@ export const lightTheme = {
       tooltip: 1500,
     },
     colors: {
-      primary: '#FADADD',        // Soft pink
-      secondary: '#FFF5F5',      // Blush white
-      accent: '#FFD1DC',         // Light rose
+      primary: '#3E513C',        // Dark Green
+      secondary: '#698A65',      // Blush white
+      accent: '#EAE4CC',         // Light rose
       gold: '#D4AF37',           // Subtle gold
       backgroundMain: '#698A65',     // Green
       backgroundLighter: '#EAE4CC',     // Yellowy

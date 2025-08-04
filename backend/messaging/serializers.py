@@ -15,6 +15,7 @@ class MessageSerializer(serializers.ModelSerializer):
             'message',
             'parent',
             'replies',
+            'pinned'
         ]
         read_only_fields = ['user', 'timestamp', 'replies']
 
