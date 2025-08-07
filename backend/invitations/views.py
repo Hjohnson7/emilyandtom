@@ -2,10 +2,10 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from invitations.models import Child, Partner, RSVP, Room, Allergy
+from invitations.models import Child, Partner, RSVP, Room, Allergy, GuestPhoto
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import RSVPSerializer, createRSVPSerializer
+from .serializers import RSVPSerializer, createRSVPSerializer, MultiGuestPhotoUploadSerializer, GuestPhotoSerializer, GuestPhotoListSerializer
 from accounts.models import UserAccount
 from django.db import transaction
 from django.utils import timezone
@@ -13,6 +13,7 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
 from django.utils.html import strip_tags
 from django.conf import settings
+from rest_framework.pagination import PageNumberPagination
 
 # Create your views here.
 
@@ -240,10 +241,13 @@ class RSVPView(APIView):
                         user.rsvped = True
                         user.save()
                     # Build a normalized entry for the email summary
+                    room_name = None
                     if rsvp.get("room"):
                         room = Room.objects.filter(pk=rsvp.get("room")).first()
                         if room.room_type == 'TENT' and not bell_tent_selected:
                             bell_tent_selected = 'Yes'
+                        room_name = room.name
+                    allergy_names = []
                     if rsvp.get('allergies'):
                         allergies = [int(alg) for alg in rsvp.get('allergies')]
                         allergies_filtered = Allergy.objects.filter(pk__in=allergies)
@@ -254,7 +258,7 @@ class RSVPView(APIView):
                         "is_attending": not is_not_attending,
                         "attending_text": "Yes" if not is_not_attending else "No",
                         "arrival_day": 'Friday' if rsvp.get("arrival_day") == 'FRI' else 'Saturday',
-                        "room": room.name,
+                        "room": room_name,
                         "food_selection": rsvp.get("food_selection"),
                         "allergies": ", ".join(allergy_names or []),
                         "message": rsvp.get("message") or "",
@@ -301,3 +305,51 @@ class RSVPView(APIView):
 
         status_code = status.HTTP_201_CREATED if not errors else status.HTTP_400_BAD_REQUEST
         return Response({'errors': errors, 'success': created}, status=status_code)
+    
+
+class GuestPhotoUploadView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        """
+        Accepts multipart/form-data with one or more images under "images" key.
+        Returns created GuestPhoto(s).
+        """
+        serializer = MultiGuestPhotoUploadSerializer(data=request.data, context={"request": request})
+        if not serializer.is_valid():
+            return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        created_photos = serializer.save()  # list of GuestPhoto instances
+        output = GuestPhotoSerializer(created_photos, many=True, context={"request": request}).data
+        return Response({"photos": output}, status=status.HTTP_201_CREATED)
+
+    def get(self, request):
+        """
+        Optional: list the authenticated user's uploaded photos
+        """
+        photos = GuestPhoto.objects.filter(user=request.user).order_by("-upload_timestamp")
+        serializer = GuestPhotoSerializer(photos, many=True, context={"request": request})
+        return Response({"photos": serializer.data}, status=status.HTTP_200_OK)
+    
+
+class GuestPhotoListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """
+        GET /api/guest-photos/           -> user's own photos
+        GET /api/guest-photos/?all=true  -> all photos (only if staff)
+        Optional: ?page= for pagination
+        """
+        qs = GuestPhoto.objects.all().order_by("-upload_timestamp")
+        show_all = request.query_params.get("all") in ["1", "true", "True"]
+
+        if not show_all or not request.user.is_staff:
+            qs = qs.filter(user=request.user)
+
+        paginator = PageNumberPagination()
+        paginator.page_size = 20  # adjust as needed or expose as param with limits
+        paginated = paginator.paginate_queryset(qs, request)
+
+        serializer = GuestPhotoListSerializer(paginated, many=True, context={"request": request})
+        return paginator.get_paginated_response({"photos": serializer.data})

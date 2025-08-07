@@ -53,7 +53,7 @@ const AdminContainer = () => {
     const breakpoint = useBreakpoint()
     const isMdUp = breakpoint !== 'xs' && breakpoint !== 'sm'
     const [mobileOpen, setMobileOpen] = useState(false);
-    const [selectedPage, setSelectedPage] = useState('Dashboard');
+    const [selectedPage, setSelectedPage] = useState('Send Updates');
     const navigate = useNavigate()
     const { user } = useAuth()
 
@@ -125,7 +125,7 @@ const AdminContainer = () => {
             </Box>
 
             <Content>
-            {!isMdUp && <Button onClick={handleDrawerToggle}>Open Navigation</Button>}
+            {!isMdUp && <Button onClick={handleDrawerToggle} sx={{backgroundColor: theme.colors.backgroundDarker, color: 'white', margin: `${theme.spacing.lg} 0`}}>Open Navigation</Button>}
                 {currentContent}
             </Content>
         </PageContainer>

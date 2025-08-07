@@ -24,7 +24,7 @@ class UserAccountViewSet(viewsets.ReadOnlyModelViewSet):
     GET /api/users/{pk}/  -> detail for a single user
     """
     permission_classes = [IsAdminUser]
-    
+
     queryset = UserAccount.objects.all().prefetch_related(
         # prefetch children and RSVP, partner fetched in serializer
         Prefetch("child_set", queryset=Child.objects.all()),
@@ -102,7 +102,11 @@ class MessageAllView(APIView):
             return Response({"detail": "Forbidden"}, status=status.HTTP_403_FORBIDDEN)
         
         data = request.data
-        users = UserAccount.objects.filter(is_active=True).exclude(rsvped=True, coming=False)
+        include_all = data.get('include_all', False)
+        if include_all:
+            users = UserAccount.objects.filter(is_active=True).exclude(rsvped=True, coming=False)
+        else:
+            users = UserAccount.objects.filter(is_active=True, rsvped=False).exclude(rsvped=True, coming=False)
         sent = []
         failed = []
 
@@ -110,7 +114,6 @@ class MessageAllView(APIView):
         connection.open()
 
         host = settings.HOST
-        print(data)
         update_title = data.get('update_title', 'Wedding Update & Your RSVP Portal')
         update_body = data.get('update_body')
         tagline = data.get("tagline", "")

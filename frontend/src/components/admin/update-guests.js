@@ -296,7 +296,7 @@ export default function WeddingUpdateForm() {
                                 }}
                             />
                         }
-                        label="Include all active users (server filters RSVPed no)."
+                        label="Send to all (if not checked it will only send to those who have not RSVP'd)"
                     />
 
                     <Box display="flex" justifyContent="flex-end" gap={2}>

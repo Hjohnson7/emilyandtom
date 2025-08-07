@@ -87,6 +87,7 @@ const NavBar = () => {
                             {user &&
                                 <>
                                 <NavButton key={'messageBoard'} theme={theme} onClick={() => goTo('message-board')}>Message Board</NavButton>
+                                <NavButton key={'photoGallery'} theme={theme} onClick={() => goTo('photo-gallery')}>Photos</NavButton>
                                 <NavButton key={'rsvp'} theme={theme} onClick={() => goTo('rsvp')}>RSVP</NavButton>
                                 </>
                                 
@@ -123,6 +124,9 @@ const NavBar = () => {
                     <>
                     <ListItem button key={'message-board'} onClick={handleDrawerToggle}>
                             <ListItemText primary={'Message Board'} onClick={() => goTo('message-board')} />
+                        </ListItem>
+                        <ListItem button key={'photo-galler'} onClick={handleDrawerToggle}>
+                            <ListItemText primary={'Photos'} onClick={() => goTo('photo-gallery')} />
                         </ListItem>
                         <ListItem button key={'rsvp'} onClick={handleDrawerToggle}>
                             <ListItemText primary={'rsvp'} onClick={() => goTo('rsvp')} />

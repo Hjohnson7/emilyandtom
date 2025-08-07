@@ -18,6 +18,7 @@ import ResetPasswordPage from './screens/authentication/resetPassword';
 import MessageScreen from './screens/messages/messages';
 import AdminPage from './screens/admin/adminPage';
 import ScrollToTop from './components/utils/scrollToTop';
+import PhotoGalleryScreen from './screens/photos/photoGallerScreen';
 
 function App() {
 
@@ -49,6 +50,7 @@ function App() {
             <Route exact path="/password/reset/confirm/:uid/:token" element={<ResetPasswordPage />} />
             <Route exact path="/message-board" element={<MessageScreen />} />
             <Route exact path="admin-page" element={<AdminPage />} />
+            <Route exact path="/photo-gallery" element={<PhotoGalleryScreen />} />
           </Routes>
         </div>
         </ScrollToTop>

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from accounts.models import UserAccount
+from django.conf import settings
 
 User = get_user_model()
 
@@ -88,7 +89,7 @@ class RSVP(models.Model):
     purchasing_food = models.BooleanField(default=False)
     favourite_song = models.CharField(max_length=255, blank=True)
     allergies = models.ManyToManyField(Allergy, blank=True)
-    food_selection = models.CharField(max_length=10, choices=FOOD_CHOICES)
+    food_selection = models.CharField(max_length=10, choices=FOOD_CHOICES, default='MEAT')
     message = models.CharField(max_length=300, blank=True, null=True)
 
     # Booking a room
@@ -101,3 +102,16 @@ class RSVP(models.Model):
 
     def __str__(self):
         return f"{self.name} RSVP on {self.timestamp.strftime('%Y-%m-%d')}"
+    
+
+def guest_photo_upload_to(instance, filename):
+    # optional: customize path, e.g., per user / date
+    return f"guest_photos/user_{instance.user.pk}/{filename}"
+
+class GuestPhoto(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="guest_photos")
+    image = models.ImageField(upload_to=guest_photo_upload_to)
+    upload_timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"GuestPhoto(id={self.pk}, user={self.user}, uploaded={self.upload_timestamp.isoformat()})"

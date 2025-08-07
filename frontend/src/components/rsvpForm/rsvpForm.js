@@ -127,10 +127,12 @@ const RSVPForm = ({ guest, index, formData, handleChange, rooms, allergies, tent
         setDisabledAll(disabled)
         handleChange(e, guest)
     }
+    
+    const overFive = (!guest.age || guest.age >= 6)
 
     return (
         <FormWrapper>
-            <Title>{guest.name}'s RSVP</Title>
+            <Title>{guest.name}'s RSVP {!overFive && '(Under 8)'}</Title>
             <Field>
                 <ToggleButtonGroup
                     name="notAttending"
@@ -157,6 +159,7 @@ const RSVPForm = ({ guest, index, formData, handleChange, rooms, allergies, tent
                     <option value="SAT">Saturday</option>
                 </Select>
             </Field>
+            {overFive && (<>
             {(formData.arrival_day === 'FRI' || !formData.arrival_day) && <Field>
                 <Label>
                     <Checkbox
@@ -226,7 +229,6 @@ const RSVPForm = ({ guest, index, formData, handleChange, rooms, allergies, tent
                     </FormGroup>
                 {/* </FormControl> */}
             </Field>
-
             <Field>
                 <Label>Food Preference</Label>
                 <Select
@@ -242,20 +244,21 @@ const RSVPForm = ({ guest, index, formData, handleChange, rooms, allergies, tent
                     <option value="MEAT">Meat</option>
                 </Select>
             </Field>
-
+            </>)}
+            {overFive && (
+                  <Field>
+                  <Label>Leave a Message</Label>
+                  <MultilineInput
+                  disabled={disabledAll}
+                  name="message"
+                  value={formData.message || ''}
+                  onChange={(e) => handleChange(e, guest)}
+                  placeholder="Type your message here..."
+              />
+              </Field>
+            )}
             <Field>
-                <Label>Leave a Message</Label>
-                <MultilineInput
-                disabled={disabledAll}
-                name="message"
-                value={formData.message || ''}
-                onChange={(e) => handleChange(e, guest)}
-                placeholder="Type your message here..."
-            />
-            </Field>
-
-            <Field>
-                <ToggleWrapper disabled={!hasAllKeys && !disabledAll} selected={formData.submit} onClick={() => handleChange({ target: { value: !formData.submit, name: "submit", type: "bool" } }, guest)}>
+                <ToggleWrapper disabled={!hasAllKeys && !disabledAll && overFive} selected={formData.submit} onClick={() => handleChange({ target: { value: !formData.submit, name: "submit", type: "bool" } }, guest)}>
                     {formData.submit ? <CheckCircle size={20} /> : <Circle size={20} />}
                     {"Completed Form"}
                 </ToggleWrapper>

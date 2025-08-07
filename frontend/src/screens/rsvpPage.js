@@ -17,6 +17,7 @@ import styled, { useTheme } from 'styled-components';
 import useBreakpoint from '../hooks/useBreakPoints';
 import RSVPConfirmationDialog from '../components/rsvpForm/dialogPopup';
 
+
 const PageContainer = styled(Box)`
     min-height: 100vh;
     background-color: ${({ theme }) => theme.colors.backgroundLighter};
@@ -67,6 +68,12 @@ const RSVPPage = () => {
     const breakpoint = useBreakpoint()
     const isLarger = breakpoint !== 'xs'
 
+    useEffect(()=>{
+        if(!user){
+            navigate('/')
+        }
+    }, [user])
+
 
     useEffect(() => {
         if (!user) {
@@ -95,17 +102,17 @@ const RSVPPage = () => {
         const curr = original[guest.name] ? { ...original[guest.name] } : {};
 
         const previousRoomId = name === 'room' && curr.room ? parseInt(curr.room) : null;
-        if(name === 'allergies'){
-            if(curr['allergies']){
-                if(value === true){
+        if (name === 'allergies') {
+            if (curr['allergies']) {
+                if (value === true) {
                     curr['allergies'].push(id)
-                }else{
+                } else {
                     curr['allergies'].pop(id)
                 }
-            }else{
+            } else {
                 curr['allergies'] = [id]
             }
-        } else{
+        } else {
             curr[name] = type === 'checkbox' ? checked : value;
         }
 
@@ -118,10 +125,10 @@ const RSVPPage = () => {
                 const selected = [...room.selected];
                 if (room.id === selectedRoomId) {
                     selected.push(1)
-                    if(room.type === 'TENT'){
-                        setTentSelected({selected: true, selectedRoom: selectedRoomId, guestName: guest.name})
-                    } else{
-                        setTentSelected({selected: false, selectedRoom: 0, guestName: null})
+                    if (room.type === 'TENT') {
+                        setTentSelected({ selected: true, selectedRoom: selectedRoomId, guestName: guest.name })
+                    } else {
+                        setTentSelected({ selected: false, selectedRoom: 0, guestName: null })
                     }
                 };
                 if (room.id === previousRoomId && previousRoomId !== selectedRoomId) selected.pop();
@@ -157,13 +164,13 @@ const RSVPPage = () => {
             }
 
             if (form.submit) {
-                if(form.arrival_day === 'SAT' && form.purchasing_food){
+                if (form.arrival_day === 'SAT' && form.purchasing_food) {
                     form.purchasing_food = false
                 }
-                if(form.room === -1){
+                if (form.room === -1) {
                     delete form.room
                 }
-                if(tentSelected.selected){
+                if (tentSelected.selected) {
                     form.room = tentSelected.selectedRoom
                 }
                 toSubmit.push({ name: guestName, ...form });
@@ -190,10 +197,10 @@ const RSVPPage = () => {
             if (notAttending.length > 0) {
                 message += `Marked as not attending: ${notAttending.join(', ')}.\n`;
             }
-            if(partiallyCompleted.length > 0 || toSubmit.length < totalGuests){
+            if (partiallyCompleted.length > 0 || toSubmit.length < totalGuests) {
                 message += `Please complete all forms prior to submitting.`
                 setCanSubmit(false)
-            }else{
+            } else {
                 message += `Do you want to proceed?`;
                 setCanSubmit(true)
             }
@@ -235,7 +242,7 @@ const RSVPPage = () => {
     const rsvpForms = guests.filter((guest) => { return guest.rsvpd === false })
     const rsvpCompleted = guests.filter((guest) => { return guest.rsvpd === true })
 
-    if(rsvpForms.length === 0 && !allComplete){
+    if (rsvpForms.length === 0 && !allComplete) {
         setAllComplete(true)
         setViewCompleted(true)
     }
@@ -342,7 +349,10 @@ const RSVPPage = () => {
                         ) : (
                             rsvpCompleted.map((guest, index) => {
                                 const details = guest.details;
-
+                                console.log(guest)
+                                console.log(guest.age >= 5)
+                                const overFive = (!guest.age || guest.age >= 6)
+                                console.log(overFive)
                                 return (
                                     <Box
                                         key={index}
@@ -355,49 +365,52 @@ const RSVPPage = () => {
                                         }}
                                     >
                                         <Typography variant="h6" gutterBottom>
-                                            {guest.name}
+                                            {guest.name} {!overFive && '(Under 5)'}
                                         </Typography>
-                                        {guest.coming ? 
-                                        <Grid container spacing={1}>
-                                            <Grid item xs={6}>
-                                                <Typography variant="body2"><strong>Arrival Day:</strong> {details.arrival_day === 'SAT' ? "Saturday" : "Friday"}</Typography>
-                                            </Grid>
-
-                                            <Grid item xs={6}>
-                                                <Typography variant="body2"><strong>Accommodation:</strong> {details.room_name ? details.room_name : 'Not Required'}</Typography>
-                                            </Grid>
-                                            <Grid item xs={6}>
-                                                <Typography variant="body2"><strong>Food Preference:</strong> {details.food_selection}</Typography>
-                                            </Grid>
-                                            {details.arrival_day === 'FRI' && (
-                                            <Grid item xs={6}>
-                                                <Typography variant="body2"><strong>Purchasing Food Friday:</strong> {details.purchasing_food ? 'Yes' : 'No'}</Typography>
-                                            </Grid>)}
-                                            <Grid item xs={6}>
-                                                <Typography variant="body2"><strong>Favourite Song:</strong> {details.favourite_song || '—'}</Typography>
-                                            </Grid>
-                                            <Grid item xs={6}>
-                                                <Typography variant="body2"><strong>Message:</strong> {details.message || '—'}</Typography>
-                                            </Grid>
-
-                                            <Grid item xs={12}>
-                                                <Typography variant="body2">
-                                                    <strong>Allergies:</strong>{' '}
-                                                    {details.allergies && details.allergies.length > 0
-                                                        ? details.allergies.join(', ')
-                                                        : 'None'}
-                                                </Typography>
-                                            </Grid>
-
-                                            {details.room && (
-                                                <Grid item xs={12}>
-                                                    <Typography variant="body2">
-                                                        <strong>Room:</strong> {typeof details.room === 'object' && 'name' in details.room ? details.room.name : 'Assigned'}
-                                                    </Typography>
+                                        {guest.coming ?
+                                            <Grid container spacing={1}>
+                                                <Grid item xs={6}>
+                                                    <Typography variant="body2"><strong>Arrival Day:</strong> {details.arrival_day === 'SAT' ? "Saturday" : "Friday"}</Typography>
                                                 </Grid>
-                                            )}
-                                        </Grid>
-                                         : <>Not Attending</>}
+                                                {overFive && (
+                                                    <>
+                                                        <Grid item xs={6}>
+                                                            <Typography variant="body2"><strong>Accommodation:</strong> {details.room_name ? details.room_name : 'Not Required'}</Typography>
+                                                        </Grid>
+                                                        <Grid item xs={6}>
+                                                            <Typography variant="body2"><strong>Food Preference:</strong> {details.food_selection}</Typography>
+                                                        </Grid>
+                                                        {details.arrival_day === 'FRI' && (
+                                                            <Grid item xs={6}>
+                                                                <Typography variant="body2"><strong>Purchasing Food Friday:</strong> {details.purchasing_food ? 'Yes' : 'No'}</Typography>
+                                                            </Grid>)}
+                                                        <Grid item xs={6}>
+                                                            <Typography variant="body2"><strong>Favourite Song:</strong> {details.favourite_song || '—'}</Typography>
+                                                        </Grid>
+                                                        <Grid item xs={6}>
+                                                            <Typography variant="body2"><strong>Message:</strong> {details.message || '—'}</Typography>
+                                                        </Grid>
+
+                                                        <Grid item xs={12}>
+                                                            <Typography variant="body2">
+                                                                <strong>Allergies:</strong>{' '}
+                                                                {details.allergies && details.allergies.length > 0
+                                                                    ? details.allergies.join(', ')
+                                                                    : 'None'}
+                                                            </Typography>
+                                                        </Grid>
+
+                                                        {details.room && (
+                                                            <Grid item xs={12}>
+                                                                <Typography variant="body2">
+                                                                    <strong>Room:</strong> {typeof details.room === 'object' && 'name' in details.room ? details.room.name : 'Assigned'}
+                                                                </Typography>
+                                                            </Grid>
+                                                        )}</>
+                                                )}
+
+                                            </Grid>
+                                            : <>Not Attending</>}
                                     </Box>
                                 );
                             })

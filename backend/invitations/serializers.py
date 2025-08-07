@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import RSVP, Allergy, Room
+from .models import RSVP, Allergy, Room, GuestPhoto
 
 class RSVPSerializer(serializers.ModelSerializer):
     user_name = serializers.SerializerMethodField()
@@ -54,3 +54,44 @@ class createRSVPSerializer(serializers.ModelSerializer):
     class Meta:
         model = RSVP
         fields = '__all__'
+
+
+class GuestPhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GuestPhoto
+        fields = ["id", "user", "image", "upload_timestamp"]
+        read_only_fields = ["id", "upload_timestamp", "user"]
+
+class MultiGuestPhotoUploadSerializer(serializers.Serializer):
+    images = serializers.ListField(
+        child=serializers.ImageField(),
+        allow_empty=False,
+        write_only=True
+    )
+
+    def create(self, validated_data):
+        user = self.context["request"].user
+        images = validated_data["images"]
+        created = []
+        for img in images:
+            photo = GuestPhoto.objects.create(user=user, image=img)
+            created.append(photo)
+        return created
+
+    def to_representation(self, instance):
+        # instance is list of GuestPhoto
+        return GuestPhotoSerializer(instance, many=True, context=self.context).data
+    
+
+class GuestPhotoListSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = GuestPhoto
+        fields = ["id", "image_url", "upload_timestamp", "user"]
+
+    def get_image_url(self, obj):
+        request = self.context.get("request")
+        if not obj.image:
+            return None
+        return request.build_absolute_uri(obj.image.url)
