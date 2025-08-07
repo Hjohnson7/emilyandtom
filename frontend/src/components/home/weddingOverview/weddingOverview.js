@@ -3,7 +3,6 @@ import styled from "styled-components"
 import AnimatedImage from "./animatedImage"
 import { motion } from 'framer-motion';
 import useInView from "../../../hooks/inViewHook";
-import AnimatedItem from "../../utils/animatedItem";
 
 const Container = styled.section`
     background-color: ${({theme}) => theme.colors.backgroundMain};
@@ -26,6 +25,7 @@ const Wrapper = styled(Box)`
     display: flex;
     flex-direction: row;
     justify-content: center;
+    flex-wrap: wrap;
 `
 
 const GroupedDetail = styled(Box)`
@@ -34,6 +34,7 @@ const GroupedDetail = styled(Box)`
     margin: ${({ theme }) => theme.spacing.lg};
     text-align: center;
     width: 25%;
+    min-width: 320px;
 `
 
 const WeddingOverview = () => {

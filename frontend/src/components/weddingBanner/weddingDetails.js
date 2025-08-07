@@ -16,13 +16,19 @@ const fadeInUp = keyframes`
 
 const Container = styled.section`
     width: 100%;
-    padding: ${({theme}) => theme.spacing.xl}
+    padding: ${({theme}) => theme.spacing.xl};
+    @media (max-width: 768px) {
+        padding: ${({theme}) => theme.spacing.xs};
+    }
 ` 
 
 const Detail = styled(Typography)`
     padding: ${({ theme }) => theme.spacing.md};
     color: ${({ theme }) => theme.colors.text};
     animation: ${fadeInUp} 1s ease-out;
+    @media (max-width: 768px) {
+        padding: ${({theme}) => theme.spacing.xs} ${({theme}) => theme.spacing.md}
+    }
 `
 
 

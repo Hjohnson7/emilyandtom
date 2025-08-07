@@ -14,11 +14,18 @@ from pathlib import Path
 import os
 from datetime import timedelta
 from decouple import config
+from django.conf import settings
+from django.conf.urls.static import static
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+
+urlpatterns = [
+    # ... your other patterns ...
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -35,6 +42,8 @@ ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS').split(',') if PRODUCTION else ['*
 
 # Application definition
 
+HOST = config('HOST')
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -45,6 +54,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'djoser',
     'accounts',
+    'invitations',
+    'messaging',
     'corsheaders',
 ]
 
@@ -215,7 +226,7 @@ SESSION_COOKIE_SECURE = False
 SESSION_COOKIE_SAMESITE = 'Lax'
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),  # how long access tokens are valid
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # how long access tokens are valid
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # how long refresh tokens are valid
     'ROTATE_REFRESH_TOKENS': True,                   # optional: creates new refresh token on refresh
     'BLACKLIST_AFTER_ROTATION': True,                # optional: blacklists old refresh tokens

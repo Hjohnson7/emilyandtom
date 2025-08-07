@@ -3,19 +3,21 @@ import React, { createContext, useState, useEffect } from 'react';
 import {APPURL} from "../constants/appUrl"
 import api from '../constants/api';
 import useAutoRefreshToken from '../hooks/useAutoRefreshHook';
+import { useSnackbar } from 'notistack';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true); // To prevent flashing
+    const { enqueueSnackbar } = useSnackbar();
 
     useAutoRefreshToken()  // Auto refresh login every 4 mins if login.
 
     useEffect(() => {
         const fetchUser = async () => {
           try {
-            const res = await api.get(`${APPURL}auth/users/me/`, {
+            const res = await api.get(`auth/users/me/`, {
                 withCredentials: true,
             });
             setUser({
@@ -23,7 +25,11 @@ export const AuthProvider = ({ children }) => {
                 lname: res.data.lname,
                 email: res.data.email,
                 is_staff: res.data.is_staff,
-                is_admin: res.data.is_admin
+                is_admin: res.data.is_admin,
+                sent_invite: res.data.sent_invite,
+                rsvped: res.data.rsvped,
+                quiz_response: res.data.quiz_response,
+                temp_password: res.data.temp_password,
               })
           } catch (err) {
             setUser(null); // Not logged in
@@ -37,14 +43,14 @@ export const AuthProvider = ({ children }) => {
     const login = async (email, password) => {
         try {
             let response = await api.post(
-                `${APPURL}auth/login`,
+                `auth/login`,
                 { email, password },
             );
             if (response?.error){
                 return response
             }
             // Token is automatically stored in HttpOnly cookies by Django backend
-            const res = await api.get(`${APPURL}auth/users/me/`, {
+            const res = await api.get(`auth/users/me/`, {
                 withCredentials: true,
             });
             setUser({
@@ -52,9 +58,13 @@ export const AuthProvider = ({ children }) => {
                 lname: res.data.lname,
                 email: res.data.email,
                 is_staff: res.data.is_staff,
-                is_admin: res.data.is_admin
+                is_admin: res.data.is_admin,
+                sent_invite: res.data.sent_invite,
+                rsvped: res.data.rsvped,
+                quiz_response: res.data.quiz_response,
+                temp_password: res.data.temp_password,
               })
-            return {user: res.data.fname}
+            return {user: res.data}
             } catch (error) {
                 console.error('Login failed', error);
                 setUser(null)
@@ -65,7 +75,7 @@ export const AuthProvider = ({ children }) => {
     const signup = async (email, fname, lname, mobile, password, confirmPassword) => {
         try {
             let response = await api.post(
-                `${APPURL}auth/users/`,
+                `auth/users/`,
                 {
                     email: email,
                     fname: fname,
@@ -86,7 +96,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         // Delete the tokens by sending a logout request to the backend
-        api.post(`${APPURL}auth/logout`, {}, { withCredentials: true })
+        api.post(`auth/logout`, {}, { withCredentials: true })
         .then(() => {
             setUser(null)
             console.log('Logged out');
@@ -98,7 +108,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const verify = (uid, token) => {
-        let response = api.post(`${APPURL}auth/users/activation/`, {
+        let response = api.post(`auth/users/activation/`, {
             uid: uid,
             token: token
         })
@@ -106,14 +116,14 @@ export const AuthProvider = ({ children }) => {
     }
 
     const resetPasswordRequest = (email) => {
-        let response = api.post(`${APPURL}auth/users/reset_password/`, {
+        let response = api.post(`auth/users/reset_password/`, {
             email: email
         })
         return response
     }
 
     const resetPassword = (uid, token, new_password, re_new_password) => {
-        let response = api.post(`${APPURL}auth/users/reset_password_confirm/`, {
+        let response = api.post(`auth/users/reset_password_confirm/`, {
             uid: uid,
             token: token,
             new_password: new_password,

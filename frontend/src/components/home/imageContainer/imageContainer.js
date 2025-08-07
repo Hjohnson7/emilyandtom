@@ -1,56 +1,91 @@
-import styled from "styled-components"
-import useInView from "../../../hooks/inViewHook"
-import { fadeInUp } from "../../utils/animatedBox"
-import { Box } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
+import styled, { css } from "styled-components";
+import { fadeInUp } from "../../utils/animatedBox";
+import useBreakpoint from "../../../hooks/useBreakPoints";
 
+const getDelay = (index) => `${index * 0.2}s`;
 
 const AnimatedImage = styled.img`
-  opacity: 0;
-  &.visible{
-    animation: ${fadeInUp}  1s ease-out forwards;
-    opactiy: 1;
-    width: 100%;
+  width: 100%;
   height: 100%;
   object-fit: cover;
-  }
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+
+  ${({ isVisible, index, sizeSmall }) =>
+        isVisible &&
+        css`
+      animation: ${fadeInUp} 0.8s ease-out forwards;
+      animation-delay: ${sizeSmall ? 0 : getDelay(index)};
+    `}
 `;
 
-const ImageBox = styled(Box)`
-  width: 320px;
-  height: 480px;
+const ImageBox = styled.div`
+  aspect-ratio: 3 / 4;
+  width: 100%;
   border: 4px solid ${({ theme }) => theme.colors.backgroundMain};
   border-radius: 50% / 35%;
   overflow: hidden;
   position: relative;
-  margin: ${({ theme }) => theme.spacing.xl};
-`
+`;
 
 const Container = styled.section`
-    background-color: ${({ theme }) => theme.colors.backgroundLighter};
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    padding: ${({ theme }) => theme.spacing.xxxl};
-`
+  background-color: ${({ theme }) => theme.colors.backgroundLighter};
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: ${({ theme }) => theme.spacing.lg};
+  padding: ${({ theme }) => theme.spacing.xxxl};
+  justify-content: center; /* centers the track group, so wrapped single items aren’t stuck left */
+`;
 
 const ImageContainer = () => {
+    const IMAGES = ['homepage2_new.JPG', 'homepage3_new.JPG', 'homepage4_new.JPG'];
+    const refs = useRef([]);
+    const [visibleStates, setVisibleStates] = useState(new Array(IMAGES.length).fill(false));
+    const breakpoint = useBreakpoint() 
+    const sizeSmall = breakpoint === 'xs' || breakpoint === 'sm';
 
-    const [ctaRef, ctaVisible] = useInView({ threshold: 0.2 });
-    const IMAGES = ['homepage1.JPG', 'homepage2.JPG', 'homepage3.JPG']
+    useEffect(() => {
+        const observers = refs.current.map((ref, i) => {
+            const observer = new IntersectionObserver(
+                ([entry]) => {
+                    if (entry.isIntersecting) {
+                        setVisibleStates((prev) => {
+                            const copy = [...prev];
+                            copy[i] = true;
+                            return copy;
+                        });
+                        observer.unobserve(ref); // optional: trigger only once
+                    }
+                },
+                { threshold: 0.2 }
+            );
+            if (ref) observer.observe(ref);
+            return observer;
+        });
+
+        return () => {
+            observers.forEach((observer) => observer.disconnect());
+        };
+    }, []);
 
     return (
-        <Container ref={ctaRef}>
-            {IMAGES.map((image, i) => {
-                return (
-                    <ImageBox key={i}>
-                        <AnimatedImage className={ctaVisible ? "visible" : ""} src={`/static/frontend/images/${image}`} alt="emily and tom" />
-                    </ImageBox>
-                )
-            })}
+        <Container>
+            {IMAGES.map((image, i) => (
+                <ImageBox key={i} ref={(el) => (refs.current[i] = el)}>
+                    <AnimatedImage
+                        src={`/static/frontend/images/${image}`}
+                        alt="emily and tom"
+                        isVisible={visibleStates[i]}
+                        sizeSmall={sizeSmall}
+                        index={i}
+                    />
+                </ImageBox>
+            ))}
         </Container>
-    )
+    );
+};
 
-}
-
-export default ImageContainer
+export default ImageContainer;

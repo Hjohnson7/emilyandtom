@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" style="margin:0; padding:0; background-color:#698A65;">
+<head>
+  <meta charset="UTF-8" />
+  <title>{{ subject|default:"Wedding Update from Emily & Tom" }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Preheader: hidden preview text -->
+  <style>
+    .preheader {
+      display: none !important;
+      visibility: hidden;
+      opacity: 0;
+      color: transparent;
+      height: 0;
+      width: 0;
+      font-size: 1px;
+      line-height: 1px;
+      max-height: 0;
+      max-width: 0;
+      overflow: hidden;
+    }
+    /* General resets for email clients */
+    body, table, td, a { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+    table { border-collapse:collapse !important; }
+    img { border:0; height:auto; line-height:100%; outline:none; text-decoration:none; display:block; }
+    a { text-decoration:none; }
+    /* Responsive */
+    @media screen and (max-width: 640px) {
+      .wrapper { width:100% !important; padding: 0 10px !important; }
+      .container { padding: 1.5rem !important; }
+      .header { font-size: 1.6rem !important; }
+      .cta { padding: 0.65rem 1.2rem !important; font-size: 14px !important; }
+    }
+  </style>
+</head>
+<body style="margin:0; padding:2rem 1rem; background-color:#698A65; font-family: 'Open Sans', Arial, sans-serif; color:#3E513C; line-height:1.5;">
+  <!-- Preheader text: shown in inbox preview -->
+  <div class="preheader">
+    {{ preheader|default:"Wedding update from Emily & Tom" }}
+  </div>
+
+  <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+    <tr>
+      <td align="center" style="padding: 0 10px;">
+        <table class="wrapper" width="600" cellpadding="0" cellspacing="0" role="presentation" style="max-width:600px; width:100%;">
+          <tr>
+            <td style="padding:0;">
+              <table class="container" width="100%" cellpadding="0" cellspacing="0" role="presentation"
+                style="background:#ffffff; border:1px solid #698A65; border-radius:16px; padding:2rem; box-shadow:0 4px 8px rgba(0,0,0,0.08);">
+                <tr>
+                  <td style="text-align:center; padding-bottom:1rem;">
+                    <h1 class="header" style="margin:0; font-family:'Playfair Display', serif; font-size:28px; color:#D4AF37; line-height:1.1;">
+                      Emily &amp; Tom's Wedding
+                    </h1>
+                    <p style="margin:4px 0 0; font-size:14px; color:#555555;">{{ tagline|default:"You're invited & here's the latest update" }}</p>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="padding-top:1rem; font-size:16px;">
+                    <p style="margin:0 0 1em;">Hi {{ name }},</p>
+
+                    {% if update_title %}
+                    <p style="margin:0 0 0.5em; font-weight:600; font-size:18px;">{{ update_title }}</p>
+                    {% endif %}
+
+                    {% if update_body %}
+                    <div style="margin:0 0 1em; font-size:15px;">
+                      {{ update_body|linebreaksbr }}
+                    </div>
+                    {% else %}
+                    <p style="margin:0 0 1em;">
+                      We're so excited to have you as part of our celebration! Below are your portal credentials and a reminder to RSVP and personalize your experience.
+                    </p>
+                    {% endif %}
+
+                    <div style="text-align:center; margin:1.5rem 0;">
+                      <a href="{{ domain }}" class="cta" style="background:#3E513C; color:#ffffff; padding:12px 24px; border-radius:8px; display:inline-block; font-weight:600; font-family: 'Open Sans', sans-serif;">
+                        Log In &amp; and see more on the website!
+                      </a>
+                    </div>
+
+                    <p style="margin:0 0 1em;">
+                      With love,<br>
+                      Emily &amp; Tom
+                    </p>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="padding-top:1rem; font-size:12px; color:#777777; border-top:1px solid #dddddd;">
+                    <p style="margin:0 0 4px;">
+                      If you didn’t expect this email or need help, reply to this message or visit your portal.
+                    </p>
+                    <p style="margin:0;">
+                      © {{ current_year }} Emily &amp; Tom. All rights reserved.
+                    </p>
+                  </td>
+                </tr>
+
+              </table>
+            </td>
+          </tr>
+          <!-- Optional footer or social icons could go here -->
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

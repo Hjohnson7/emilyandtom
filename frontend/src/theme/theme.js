@@ -7,19 +7,23 @@ export const lightTheme = {
       tooltip: 1500,
     },
     colors: {
-      primary: '#FADADD',        // Soft pink
-      secondary: '#FFF5F5',      // Blush white
-      accent: '#FFD1DC',         // Light rose
+      primary: '#3E513C',        // Dark Green
+      secondary: '#698A65',      // Blush white
+      accent: '#EAE4CC',         // Light rose
       gold: '#D4AF37',           // Subtle gold
       backgroundMain: '#698A65',     // Green
       backgroundLighter: '#EAE4CC',     // Yellowy
       backgroundDarker: '#3E513C',  // Dark Green
-      text: '#FFFFFF',           // Dark gray
+      text: '#FFFFFF',           // white
       muted: '#AAAAAA',          // Light gray
+      black: 'black',
+      faqs: '#F3DBB9',
     },
     typography: {
       fontFamily: "'Playfair Display', serif",
       bodyFont: "'Open Sans', sans-serif",
+      serif: "'Playfair Display', serif",
+      script: "'Great Vibes', cursive", // Or any other elegant script you prefer
       fontSizes: {
         small: 'clamp(0.85rem, 1vw, 0.95rem)',
         medium: 'clamp(1rem, 1.2vw, 1.1rem)',
@@ -39,6 +43,9 @@ export const lightTheme = {
     borders: {
       radius: '8px',
       radiuslg: '16px'
+    },
+    radius: {
+      md: '4px'
     },
     shadows: {
       subtle: '0 2px 4px rgba(0, 0, 0, 0.05)',

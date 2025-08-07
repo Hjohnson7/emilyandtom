@@ -29,19 +29,24 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     fname = models.CharField(max_length=255)
     lname = models.CharField(max_length=255)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
     last_login = models.DateTimeField(blank=True, null=True)
+    sent_invite = models.BooleanField(default=False)
+    rsvped = models.BooleanField(default=False)
+    coming = models.BooleanField(default=True)
+    quiz_response = models.BooleanField(default=False)
+    temp_password = models.BooleanField(default=True)
     objects = UserAccountManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ["fname", "lname"]
 
     def get_full_name(self):
-        return self.fname + self.lname
+        return self.fname + " " + self.lname
 
     def get_short_name(self):
         return self.fname
