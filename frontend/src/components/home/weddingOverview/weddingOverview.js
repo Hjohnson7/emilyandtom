@@ -42,13 +42,13 @@ const WeddingOverview = () => {
         {
             title: 'The Venue',
             text: 'We’re celebrating at the Lakeside Events Hall in our hometown, Sterrington Way.',
-            image: '/static/frontend/images/venue.PNG',
+            image: '/static/frontend/images/venue.png',
             alt: 'venue'
         },
         {
             title: 'Accomodations',
             text: "There is a range of accomodation at the venue for guests. Please choose when you RSVP",
-            image: '/static/frontend/images/accomodation.PNG',
+            image: '/static/frontend/images/accomodation.png',
             alt: 'accomodation'
         },
         {

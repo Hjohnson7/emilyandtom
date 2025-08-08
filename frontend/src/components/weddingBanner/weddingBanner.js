@@ -87,12 +87,12 @@ const WeddingBanner = () => {
     return (
         <BannerWrapper>
             {/* Images flying in (hidden on very small screens) */}
-            <Image src="/static/frontend/images/van.PNG" alt="van" style={{ top: `${isMobile ? 30 : 26}%`, left: `${isMobile ? 10 : 18}%` }} variants={imageVariants(-200, -50)} initial="hidden" animate="visible" />
-            <Image src="/static/frontend/images/champagne.PNG" alt="champagne" style={{ top: '0%', left: `${isMobile ? 20 : 23}%`  }} variants={imageVariants(200, -100)} initial="hidden" animate="visible" />
-            {!isMobile && (<Image src="/static/frontend/images/cake.PNG" alt="cake" style={{ bottom: '10%', left: '13%', display: null}} variants={imageVariants(-200, 100)} initial="hidden" animate="visible" />)}
-            <Image src="/static/frontend/images/bird.PNG" alt="bird" style={{ top: '0%', right: `${isMobile ? 18 : 18}%` }} variants={imageVariants(200, -50)} initial="hidden" animate="visible" />
-            <Image src="/static/frontend/images/mountains.PNG" alt="mountains" style={{ top: `${isMobile ? 40 : 34}%`, right: `${isMobile ? 10 : 18}%` }} variants={imageVariants(200, 100)} initial="hidden" animate="visible" />
-            {!isMobile && (<Image src="/static/frontend/images/cocktail.PNG" alt="cocktail" style={{ bottom: '10%', right: '13%' }} variants={imageVariants(100, 100)} initial="hidden" animate="visible" />)}
+            <Image src="/static/frontend/images/van.png" alt="van" style={{ top: `${isMobile ? 30 : 26}%`, left: `${isMobile ? 10 : 18}%` }} variants={imageVariants(-200, -50)} initial="hidden" animate="visible" />
+            <Image src="/static/frontend/images/champagne.png" alt="champagne" style={{ top: '0%', left: `${isMobile ? 20 : 23}%`  }} variants={imageVariants(200, -100)} initial="hidden" animate="visible" />
+            {!isMobile && (<Image src="/static/frontend/images/cake.png" alt="cake" style={{ bottom: '10%', left: '13%', display: null}} variants={imageVariants(-200, 100)} initial="hidden" animate="visible" />)}
+            <Image src="/static/frontend/images/bird.png" alt="bird" style={{ top: '0%', right: `${isMobile ? 18 : 18}%` }} variants={imageVariants(200, -50)} initial="hidden" animate="visible" />
+            <Image src="/static/frontend/images/mountains.png" alt="mountains" style={{ top: `${isMobile ? 40 : 34}%`, right: `${isMobile ? 10 : 18}%` }} variants={imageVariants(200, 100)} initial="hidden" animate="visible" />
+            {!isMobile && (<Image src="/static/frontend/images/cocktail.png" alt="cocktail" style={{ bottom: '10%', right: '13%' }} variants={imageVariants(100, 100)} initial="hidden" animate="visible" />)}
 
             {/* Main text block */}
             <motion.div variants={textVariants} initial="hidden" animate="visible">
