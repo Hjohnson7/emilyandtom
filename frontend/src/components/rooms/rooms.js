@@ -110,8 +110,8 @@ const AccommodationGrid = () => {
   };
 
   const ImageMap = {
-    'BUNK': '/static/frontend/images/bunk_room.PNG',
-    'TENT': '/static/frontend/images/accomodation.PNG',
+    'BUNK': '/static/frontend/images/bunk_room.png',
+    'TENT': '/static/frontend/images/accomodation.png',
   }
     
 
