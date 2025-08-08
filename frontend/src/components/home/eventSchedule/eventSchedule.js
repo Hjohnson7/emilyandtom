@@ -120,7 +120,7 @@ const ScheduleOfEvents = () => {
         { time: "6:00 - 9:00 PM", title: "FOOD AVAILABLE" },
         { time: "Saturday morning", title: "FREE TIME TO EXPLORE WILDERNESS" },
         { time: "Saturday Midday", title: "COCKTAIL CELEBRATION & BBQ" },
-        { time: "Saturday Evening", title: "FOOT STOMPNIG TUNES" },
+        { time: "Saturday Evening", title: "FOOT STOMPING TUNES" },
         { time: "Sunday Morning", title: "BREAKFAST" },
         { time: "Sunday Afternoon", title: "GUESTS DEPART" },
     ];
