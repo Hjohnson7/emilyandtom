@@ -136,10 +136,10 @@ const NavBar = () => {
                     {user?.is_staff && (
                          <>
                          <ListItem button key={'manage-wedding'} onClick={handleDrawerToggle}>
-                            <AccountCircleIcon onClick={() => navigate('admin-page')}/> <ListItemText primary={'Message Board'} onClick={() => navigate('admin-page')} />
+                            <AccountCircleIcon onClick={() => navigate('admin-page')}/> <ListItemText primary={'Admin Page'} onClick={() => navigate('admin-page')} />
                              </ListItem>
                              <ListItem button key={'admin-page'} onClick={handleDrawerToggle}>
-                             <SupervisorAccountIcon onClick={goToAdmin}/> <ListItemText primary={'rsvp'} onClick={goToAdmin} />
+                             <SupervisorAccountIcon onClick={goToAdmin}/> <ListItemText primary={'Admin Settings'} onClick={goToAdmin} />
                              </ListItem>
                          </>
                     )}
