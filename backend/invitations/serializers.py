@@ -1,5 +1,12 @@
 from rest_framework import serializers
 from .models import RSVP, Allergy, Room, GuestPhoto
+from io import BytesIO
+from django.core.files.base import ContentFile
+from PIL import Image
+import pillow_heif
+
+# Enable HEIC/HEIF reading in Pillow
+pillow_heif.register_heif_opener()
 
 class RSVPSerializer(serializers.ModelSerializer):
     user_name = serializers.SerializerMethodField()
@@ -73,13 +80,33 @@ class MultiGuestPhotoUploadSerializer(serializers.Serializer):
         user = self.context["request"].user
         images = validated_data["images"]
         created = []
+
         for img in images:
+            # Detect HEIC/HEIF from filename or content type
+            is_heic = (
+                img.name.lower().endswith((".heic", ".heif"))
+                or getattr(img, "content_type", "").lower() in ("image/heic", "image/heif")
+            )
+
+            if is_heic:
+                # Open and convert to JPEG in-memory
+                image = Image.open(img)
+                buffer = BytesIO()
+                image = image.convert("RGB")  # Ensure no alpha channel for JPEG
+                image.save(buffer, format="JPEG", quality=95)
+
+                # Replace the file with converted JPEG
+                img = ContentFile(
+                    buffer.getvalue(),
+                    name=img.name.rsplit(".", 1)[0] + ".jpg"
+                )
+
             photo = GuestPhoto.objects.create(user=user, image=img)
             created.append(photo)
+
         return created
 
     def to_representation(self, instance):
-        # instance is list of GuestPhoto
         return GuestPhotoSerializer(instance, many=True, context=self.context).data
     
 

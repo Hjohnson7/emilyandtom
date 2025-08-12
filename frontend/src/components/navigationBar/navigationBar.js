@@ -129,7 +129,7 @@ const NavBar = () => {
                             <ListItemText primary={'Photos'} onClick={() => goTo('photo-gallery')} />
                         </ListItem>
                         <ListItem button key={'rsvp'} onClick={handleDrawerToggle}>
-                            <ListItemText primary={'rsvp'} onClick={() => goTo('rsvp')} />
+                            <ListItemText primary={'RSVP'} onClick={() => goTo('rsvp')} />
                         </ListItem>
                     </>
                     }
