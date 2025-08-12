@@ -113,7 +113,7 @@ class MessageAllView(APIView):
         connection = get_connection(fail_silently=False)  # reuse single SMTP connection
         connection.open()
 
-        host = settings.HOST
+        host = f'http://{settings.HOST}'
         update_title = data.get('update_title', 'Wedding Update & Your RSVP Portal')
         update_body = data.get('update_body')
         tagline = data.get("tagline", "")
@@ -256,13 +256,13 @@ class CreateGuestUsersView(APIView):
                 extras_string = ", " + extras_string
                 extras_string += ' and ' + extras[-1]
 
-
+            host = f'http://{settings.HOST}'
             # Send invite email
             html_message = render_to_string("emails/invite_email.html", {
                 "name": user.fname,
                 "email": email,
                 "password": password,
-                "domain": "https://emilyandtom.com",
+                "domain": host,
                 "extras": extras_string
             })
 
